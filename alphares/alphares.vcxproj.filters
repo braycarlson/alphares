@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="src\simpleini\SimpleIni.h">
+      <Filter>src\simpleini</Filter>
+    </ClInclude>
+    <ClInclude Include="src\resources.h">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="alphares.exe.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="alphares.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{4ed6eb96-b960-42a4-b516-9c0e52068811}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\simpleini">
+      <UniqueIdentifier>{e08001f9-639d-411d-a88a-3a0f81337dcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gfx">
+      <UniqueIdentifier>{d28b40ad-2719-4915-8da7-d13904e4f3c1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\alphares.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="gfx\alphares.ico">
+      <Filter>gfx</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
