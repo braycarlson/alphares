@@ -37,7 +37,7 @@ void CenterWindow(HWND window, DWORD style, DWORD exStyle) {
         client_width, client_height, 0);
 }
 
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow) {
+int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ PWSTR pCmdLine, _In_ int nCmdShow) {
     const wchar_t CLASS_NAME[] = L"alphares";
     const wchar_t WINDOW_NAME[] = L"alphares";
 
@@ -59,7 +59,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow
         CLASS_NAME,
         WINDOW_NAME,
         WS_OVERLAPPEDWINDOW&~WS_MAXIMIZEBOX^WS_THICKFRAME,
-        CW_USEDEFAULT, CW_USEDEFAULT, 250, 159,
+        CW_USEDEFAULT, CW_USEDEFAULT, 250, 179,
         NULL,
         NULL,
         hInstance,
@@ -83,38 +83,39 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow
     return 0;
 }
 
-std::string GetConfiguration() {
+std::string GetPath() {
     char* localappdata;
     size_t length;
-    _dupenv_s(&localappdata, &length, "LOCALAPPDATA");
-    std::string file = "/FortniteGame/Saved/Config/WindowsClient/GameUserSettings.ini";
-    std::string path = localappdata + file;
-    free(localappdata);
+    errno_t error =_dupenv_s(&localappdata, &length, "LOCALAPPDATA");
 
-    return path;
+	if (localappdata != 0) {
+		std::string file = "/FortniteGame/Saved/Config/WindowsClient/GameUserSettings.ini";
+		std::string path = localappdata + file;
+		free(localappdata);
+
+		return path;
+	}
 }
 
-void SetConfiguration(std::string path, int user_width, int user_height) {
+void SetConfiguration(std::string path, int user_width, int user_height, int user_fps) {
     std::string width_string = std::to_string(user_width);
     std::string height_string = std::to_string(user_height);
+	std::string fps_string = std::to_string(user_fps) + ".000000";
     const char* width = width_string.c_str();
     const char* height = height_string.c_str();
+	const char* fps = fps_string.c_str();
 
-    LPCSTR file = path.c_str();
-    DWORD attributes = GetFileAttributesA(file);
-
-    if (attributes & FILE_ATTRIBUTE_READONLY) {
-        attributes &= ~FILE_ATTRIBUTE_READONLY;
-        SetFileAttributesA(file, attributes);
-    }
-
-    const char* section = "/Script/FortniteGame.FortGameUserSettings";
-
+	// Load file
+	LPCSTR file = path.c_str();
     CSimpleIniA ini;
     ini.SetSpaces(false);
     ini.SetUnicode();
     ini.LoadFile(file);
 
+	// Define section
+	const char* section = "/Script/FortniteGame.FortGameUserSettings";
+
+	// Set resolution
     ini.SetValue(section, "ResolutionSizeX", width);
     ini.SetValue(section, "ResolutionSizeY", height);
     ini.SetValue(section, "LastUserConfirmedResolutionSizeX", width);
@@ -124,7 +125,34 @@ void SetConfiguration(std::string path, int user_width, int user_height) {
     ini.SetValue(section, "LastUserConfirmedDesiredScreenWidth", width);
     ini.SetValue(section, "LastUserConfirmedDesiredScreenHeight", height);
 
+	// Set frame rate limit
+	ini.SetValue(section, "FrameRateLimit", fps);
+
+	// Save file
     ini.SaveFile(file);
+}
+
+void SetWindowMode(std::string path, int user_state) {
+	std::string state_string = std::to_string(user_state);
+	const char* state = state_string.c_str();
+
+	// Define section
+	const char* section = "/Script/FortniteGame.FortGameUserSettings";
+
+	// Load file
+	LPCSTR file = path.c_str();
+	CSimpleIniA ini;
+	ini.SetSpaces(false);
+	ini.SetUnicode();
+	ini.LoadFile(file);
+
+	// Set window mode
+	ini.SetValue(section, "LastConfirmedFullscreenMode", state);
+	ini.SetValue(section, "PreferredFullscreenMode", state);
+	ini.SetValue(section, "FullscreenMode", state);
+
+	// Save file
+	ini.SaveFile(file);
 }
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
@@ -142,12 +170,13 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
     case WM_CREATE:
         hInstance = GetModuleHandle(nullptr);
 
+		// Width Label
         CreateWindowEx(
             NULL,
             TEXT("Static"),
             TEXT("Width"),
             WS_CHILD | WS_VISIBLE | ES_CENTER,
-            50, 12, 60, 20,
+            10, 12, 60, 20,
             hwnd,
             (HMENU)IDC_WIDTH_LABEL,
             hInstance,
@@ -159,12 +188,13 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
             (WPARAM)hFont,
             TRUE);
 
+		// Height Label
         CreateWindowEx(
             NULL,
             TEXT("Static"),
             TEXT("Height"),
             WS_CHILD | WS_VISIBLE | ES_CENTER,
-            125, 12, 60, 20,
+            85, 12, 60, 20,
             hwnd,
             (HMENU)IDC_HEIGHT_LABEL,
             hInstance,
@@ -176,16 +206,35 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
             (WPARAM)hFont,
             TRUE);
 
-        CreateWindowEx(
-            NULL,
-            TEXT("Edit"),
-            TEXT("1920"),
-            WS_CHILD | WS_VISIBLE | ES_NUMBER | ES_CENTER | WS_TABSTOP,
-            50, 32, 60, 15,
-            hwnd,
-            (HMENU)IDC_WIDTH_EDIT,
-            hInstance,
-            NULL);
+		// FPS Label
+		CreateWindowEx(
+			NULL,
+			TEXT("Static"),
+			TEXT("FPS"),
+			WS_CHILD | WS_VISIBLE | ES_CENTER,
+			159, 12, 60, 20,
+			hwnd,
+			(HMENU)IDC_FPS_LABEL,
+			hInstance,
+			NULL);
+
+		SendMessage(
+			GetDlgItem(hwnd, IDC_FPS_LABEL),
+			WM_SETFONT,
+			(WPARAM)hFont,
+			TRUE);
+
+		// Edit Width Box
+		CreateWindowEx(
+			NULL,
+			TEXT("Edit"),
+			TEXT("1920"),
+			WS_CHILD | WS_VISIBLE | ES_NUMBER | ES_CENTER | WS_TABSTOP,
+			10, 32, 60, 15,
+			hwnd,
+			(HMENU)IDC_WIDTH_EDIT,
+			hInstance,
+			NULL);
 
         SendMessage(
             GetDlgItem(hwnd, IDC_WIDTH_EDIT),
@@ -198,12 +247,13 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
             EM_SETLIMITTEXT,
             4, 0);
 
+		// Edit Height Box
         CreateWindowEx(
             NULL,
             TEXT("Edit"),
             TEXT("1080"),
             WS_CHILD | WS_VISIBLE | ES_NUMBER | ES_CENTER | WS_TABSTOP,
-            125, 32, 60, 15,
+            85, 32, 60, 15,
             hwnd,
             (HMENU)IDC_HEIGHT_EDIT,
             hInstance,
@@ -220,35 +270,85 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
             EM_SETLIMITTEXT,
             4, 0);
 
-        CreateWindowEx(
-            NULL,
-            TEXT("Button"),
-            NULL,
-            WS_VISIBLE | WS_CHILD | BS_AUTOCHECKBOX,
-            50, 56, 90, 15,
-            hwnd,
-            (HMENU)IDC_CHECKBOX,
-            hInstance,
-            NULL);
+		// Edit FPS Box
+		CreateWindowEx(
+			NULL,
+			TEXT("Edit"),
+			TEXT("240"),
+			WS_CHILD | WS_VISIBLE | ES_NUMBER | ES_CENTER | WS_TABSTOP,
+			159, 32, 60, 15,
+			hwnd,
+			(HMENU)IDC_FPS_EDIT,
+			hInstance,
+			NULL);
 
-        SendMessage(
-            GetDlgItem(hwnd, IDC_CHECKBOX),
-            WM_SETFONT,
-            (WPARAM)hFont,
-            TRUE);
+		SendMessage(
+			GetDlgItem(hwnd, IDC_FPS_EDIT),
+			WM_SETFONT,
+			(WPARAM)hFont,
+			TRUE);
 
-        SendMessage(
-            GetDlgItem(hwnd, IDC_CHECKBOX),
-            BM_SETCHECK,
-            BST_CHECKED,
-            0);
+		SendMessage(
+			GetDlgItem(hwnd, IDC_FPS_EDIT),
+			EM_SETLIMITTEXT,
+			3, 0);
 
+		// Fullscreen Checkbox
+		CreateWindowEx(
+			NULL,
+			TEXT("Button"),
+			TEXT("Fullscreen"),
+			WS_VISIBLE | WS_CHILD | BS_AUTOCHECKBOX,
+			10, 56, 90, 15,
+			hwnd,
+			(HMENU)IDC_FS_CHECKBOX,
+			hInstance,
+			NULL);
+
+		SendMessage(
+			GetDlgItem(hwnd, IDC_FS_CHECKBOX),
+			WM_SETFONT,
+			(WPARAM)hFont,
+			TRUE);
+
+		SendMessage(
+			GetDlgItem(hwnd, IDC_FS_CHECKBOX),
+			BM_SETCHECK,
+			BST_CHECKED,
+			0);
+
+
+		// Read-only Checkbox
+		CreateWindowEx(
+			NULL,
+			TEXT("Button"),
+			TEXT("Read-only"),
+			WS_VISIBLE | WS_CHILD | BS_AUTOCHECKBOX,
+			10, 76, 90, 15,
+			hwnd,
+			(HMENU)IDC_RO_CHECKBOX,
+			hInstance,
+			NULL);
+
+		SendMessage(
+			GetDlgItem(hwnd, IDC_RO_CHECKBOX),
+			WM_SETFONT,
+			(WPARAM)hFont,
+			TRUE);
+
+		SendMessage(
+			GetDlgItem(hwnd, IDC_RO_CHECKBOX),
+			BM_SETCHECK,
+			BST_CHECKED,
+			0);
+
+		// Apply Button
         CreateWindowEx(
             NULL,
             TEXT("Button"),
             TEXT("Apply"),
             WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
-            50, 80, 134, 25,
+            10, 100, 209, 25,
             hwnd,
             (HMENU)IDC_APPLY_BUTTON,
             hInstance,
@@ -262,6 +362,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 
         break;
 
+	// Set background and text color for static controls
     case WM_CTLCOLORSTATIC:
     {
         HDC hdcStatic = (HDC)wParam;
@@ -270,6 +371,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
         return (INT_PTR)hBrushStatic;
     }
 
+	// Set background and text color for edit controls
     case WM_CTLCOLOREDIT:
     {
         HDC hdcEdit = (HDC)wParam;
@@ -278,6 +380,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
         return (INT_PTR)hBrushEdit;
     }
 
+	// Set background and text color for button controls
     case WM_CTLCOLORBTN:
     {
         HDC hdcButton = (HDC)wParam;
@@ -287,11 +390,20 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
     }
 
     case WM_COMMAND:
+		// Apply the settings to the configuration file
         if (LOWORD(wParam) == IDC_APPLY_BUTTON) {
-            std::string path = GetConfiguration();
+            std::string path = GetPath();
             LPCSTR file = path.c_str();
-            BOOL checked = IsDlgButtonChecked(hwnd, IDC_CHECKBOX);
+            BOOL ro_checked = IsDlgButtonChecked(hwnd, IDC_RO_CHECKBOX);
+			BOOL fs_checked = IsDlgButtonChecked(hwnd, IDC_FS_CHECKBOX);
             struct stat buffer;
+
+			DWORD attributes = GetFileAttributesA(file);
+
+			if (attributes & FILE_ATTRIBUTE_READONLY) {
+				attributes &= ~FILE_ATTRIBUTE_READONLY;
+				SetFileAttributesA(file, attributes);
+			}
 
             if (stat(file, &buffer) == 0) {
                 BOOL success;
@@ -308,12 +420,18 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
                     &success,
                     FALSE);
 
-                if (success == TRUE) {
-                    SetConfiguration(path, width, height);
+				int fps = GetDlgItemInt(
+					hwnd,
+					IDC_FPS_EDIT,
+					&success,
+					FALSE);
+
+                if (success) {
+                    SetConfiguration(path, width, height, fps);
 
                     MessageBoxA(
                         hwnd,
-                        "Your resolution was successfully saved.",
+                        "Your settings were successfully saved.",
                         "Success",
                         MB_OK);
                 } else {
@@ -324,7 +442,18 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
                         MB_OK | MB_ICONWARNING);
                 }
 
-                if (checked) {
+				// Set the fullscreen option(s) in the configuration file
+				if (fs_checked) {
+					// 0 sets the Window Mode to Fullscreen
+					SetWindowMode(file, 0);
+				}
+				else {
+					// 1 sets the Window Mode to Windowed Fullscreen
+					SetWindowMode(file, 1);
+				}
+
+				// Set the configuration file to read-only
+                if (ro_checked) {
                     SetFileAttributesA(file, FILE_ATTRIBUTE_READONLY);
                 }
             } else {
@@ -334,30 +463,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
                     "Error",
                     MB_OK | MB_ICONERROR);
             }
-        }
-        break;
-
-    case WM_NOTIFY:
-        switch (((LPNMHDR)lParam)->code) {
-        case NM_CUSTOMDRAW:
-            if (wParam == IDC_CHECKBOX) {
-                LPNMCUSTOMDRAW lpnmcd = (LPNMCUSTOMDRAW)lParam;
-
-                switch (lpnmcd->dwDrawStage) {
-                case CDDS_PREPAINT:
-                    SetTextColor(lpnmcd->hdc, RGB(93, 107, 238));
-
-                    DrawTextA(
-                        lpnmcd->hdc,
-                        "Read-Only",
-                        9,
-                        &lpnmcd->rc,
-                        DT_CENTER | DT_SINGLELINE | DT_VCENTER);
-
-                    return TRUE;
-                }
-            }
-            break;
         }
         break;
 
