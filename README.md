@@ -18,6 +18,11 @@ You must set the FPS field to `0` in alphares, if you want to have a **Unlimited
 * alphares can set the read-only attribute on the configuration file. It is on by default, however, you will not be allowed to save changes in your Fortnite Settings while it is on. If it is off, Fortnite **may** overwrite your custom settings when you update the game.
 * alphares will save your custom settings to `C:\Users\Username\AppData\Local\FortniteGame\Saved\Config\WindowsClient\GameUserSettings.ini`, and set the read-only attribute after saving the file.
 
+## To-Do
+* Draw an outline on the `Apply` button when focused
+* Customize and change the color of the `BS_GROUPBOX` rectangle
+* Redraw the radio buttons
+
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details

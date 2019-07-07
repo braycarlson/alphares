@@ -97,13 +97,16 @@ std::string GetPath() {
     }
 }
 
-void SetConfiguration(std::string path, int user_width, int user_height, int user_fps) {
+void SetConfiguration(std::string path, int user_width, int user_height, int user_fps, int user_mode) {
     std::string width_string = std::to_string(user_width);
     std::string height_string = std::to_string(user_height);
     std::string fps_string = std::to_string(user_fps) + ".000000";
+    std::string mode_string = std::to_string(user_mode);
+
     const char* width = width_string.c_str();
     const char* height = height_string.c_str();
     const char* fps = fps_string.c_str();
+    const char* mode = mode_string.c_str();
 
     // Load file
     LPCSTR file = path.c_str();
@@ -128,39 +131,22 @@ void SetConfiguration(std::string path, int user_width, int user_height, int use
     // Set frame rate limit
     ini.SetValue(section, "FrameRateLimit", fps);
 
-    // Save file
-    ini.SaveFile(file);
-}
-
-void SetWindowMode(std::string path, int user_state) {
-    std::string state_string = std::to_string(user_state);
-    const char* state = state_string.c_str();
-
-    // Define section
-    const char* section = "/Script/FortniteGame.FortGameUserSettings";
-
-    // Load file
-    LPCSTR file = path.c_str();
-    CSimpleIniA ini;
-    ini.SetSpaces(false);
-    ini.SetUnicode();
-    ini.LoadFile(file);
-
     // Set window mode
-    ini.SetValue(section, "LastConfirmedFullscreenMode", state);
-    ini.SetValue(section, "PreferredFullscreenMode", state);
-    ini.SetValue(section, "FullscreenMode", state);
+    ini.SetValue(section, "LastConfirmedFullscreenMode", mode);
+    ini.SetValue(section, "PreferredFullscreenMode", mode);
+    ini.SetValue(section, "FullscreenMode", mode);
 
     // Save file
     ini.SaveFile(file);
 }
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+    HINSTANCE hInstance;
     NONCLIENTMETRICS ncm;
     ncm.cbSize = sizeof(ncm);
     SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(ncm), &ncm, 0);
 
-    HINSTANCE hInstance;
+    // Resources
     static HFONT hFont = CreateFontIndirect(&ncm.lfMessageFont);
     static HBRUSH hBrushStatic = CreateSolidBrush(RGB(43, 45, 92));
     static HBRUSH hBrushEdit = CreateSolidBrush(RGB(35, 35, 79));
@@ -201,446 +187,451 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
     LPCWSTR fps = w_fps.c_str();
 
     switch (message) {
-    case WM_CREATE:
-        hInstance = GetModuleHandle(nullptr);
+        case WM_CREATE:
+            hInstance = GetModuleHandle(nullptr);
 
-        // Width Label
-        CreateWindowEx(
-            NULL,
-            TEXT("Static"),
-            TEXT("Width"),
-            WS_CHILD | WS_VISIBLE | ES_CENTER,
-            10, 12, 60, 20,
-            hwnd,
-            (HMENU)IDC_WIDTH_LABEL,
-            hInstance,
-            NULL);
+            // Width Label
+            CreateWindowEx(
+                NULL,
+                TEXT("Static"),
+                TEXT("Width"),
+                WS_CHILD | WS_VISIBLE | ES_CENTER,
+                10, 12, 60, 20,
+                hwnd,
+                (HMENU)IDC_WIDTH_LABEL,
+                hInstance,
+                NULL);
 
-        SendMessage(
-            GetDlgItem(hwnd, IDC_WIDTH_LABEL),
-            WM_SETFONT,
-            (WPARAM)hFont,
-            TRUE);
+            SendMessage(
+                GetDlgItem(hwnd, IDC_WIDTH_LABEL),
+                WM_SETFONT,
+                (WPARAM)hFont,
+                TRUE);
 
-        // Height Label
-        CreateWindowEx(
-            NULL,
-            TEXT("Static"),
-            TEXT("Height"),
-            WS_CHILD | WS_VISIBLE | ES_CENTER,
-            85, 12, 60, 20,
-            hwnd,
-            (HMENU)IDC_HEIGHT_LABEL,
-            hInstance,
-            NULL);
+            // Height Label
+            CreateWindowEx(
+                NULL,
+                TEXT("Static"),
+                TEXT("Height"),
+                WS_CHILD | WS_VISIBLE | ES_CENTER,
+                85, 12, 60, 20,
+                hwnd,
+                (HMENU)IDC_HEIGHT_LABEL,
+                hInstance,
+                NULL);
 
-        SendMessage(
-            GetDlgItem(hwnd, IDC_HEIGHT_LABEL),
-            WM_SETFONT,
-            (WPARAM)hFont,
-            TRUE);
+            SendMessage(
+                GetDlgItem(hwnd, IDC_HEIGHT_LABEL),
+                WM_SETFONT,
+                (WPARAM)hFont,
+                TRUE);
 
-        // FPS Label
-        CreateWindowEx(
-            NULL,
-            TEXT("Static"),
-            TEXT("FPS"),
-            WS_CHILD | WS_VISIBLE | ES_CENTER,
-            159, 12, 60, 20,
-            hwnd,
-            (HMENU)IDC_FPS_LABEL,
-            hInstance,
-            NULL);
+            // FPS Label
+            CreateWindowEx(
+                NULL,
+                TEXT("Static"),
+                TEXT("FPS"),
+                WS_CHILD | WS_VISIBLE | ES_CENTER,
+                159, 12, 60, 20,
+                hwnd,
+                (HMENU)IDC_FPS_LABEL,
+                hInstance,
+                NULL);
 
-        SendMessage(
-            GetDlgItem(hwnd, IDC_FPS_LABEL),
-            WM_SETFONT,
-            (WPARAM)hFont,
-            TRUE);
+            SendMessage(
+                GetDlgItem(hwnd, IDC_FPS_LABEL),
+                WM_SETFONT,
+                (WPARAM)hFont,
+                TRUE);
 
-        // Edit Width Box
-        if (width_length >= 5) {
+            // Edit Width Box
+            if (width_length >= 5) {
+                CreateWindowEx(
+                    NULL,
+                    TEXT("Edit"),
+                    TEXT("1920"),
+                    WS_CHILD | WS_VISIBLE | ES_NUMBER | ES_CENTER | WS_TABSTOP,
+                    10, 32, 60, 15,
+                    hwnd,
+                    (HMENU)IDC_WIDTH_EDIT,
+                    hInstance,
+                    NULL);
+            }
+            else {
+                CreateWindowEx(
+                    NULL,
+                    TEXT("Edit"),
+                    width,
+                    WS_CHILD | WS_VISIBLE | ES_NUMBER | ES_CENTER | WS_TABSTOP,
+                    10, 32, 60, 15,
+                    hwnd,
+                    (HMENU)IDC_WIDTH_EDIT,
+                    hInstance,
+                    NULL);
+            }
+
+            SendMessage(
+                GetDlgItem(hwnd, IDC_WIDTH_EDIT),
+                WM_SETFONT,
+                (WPARAM)hFont,
+                TRUE);
+
+            SendMessage(
+                GetDlgItem(hwnd, IDC_WIDTH_EDIT),
+                EM_SETLIMITTEXT,
+                4, 0);
+
+            // Edit Height Box
+            if (height_length >= 5) {
+                CreateWindowEx(
+                    NULL,
+                    TEXT("Edit"),
+                    TEXT("1920"),
+                    WS_CHILD | WS_VISIBLE | ES_NUMBER | ES_CENTER | WS_TABSTOP,
+                    85, 32, 60, 15,
+                    hwnd,
+                    (HMENU)IDC_HEIGHT_EDIT,
+                    hInstance,
+                    NULL);
+            }
+            else {
+                CreateWindowEx(
+                    NULL,
+                    TEXT("Edit"),
+                    height,
+                    WS_CHILD | WS_VISIBLE | ES_NUMBER | ES_CENTER | WS_TABSTOP,
+                    85, 32, 60, 15,
+                    hwnd,
+                    (HMENU)IDC_HEIGHT_EDIT,
+                    hInstance,
+                    NULL);
+            }
+
+            SendMessage(
+                GetDlgItem(hwnd, IDC_HEIGHT_EDIT),
+                WM_SETFONT,
+                (WPARAM)hFont,
+                TRUE);
+
+            SendMessage(
+                GetDlgItem(hwnd, IDC_HEIGHT_EDIT),
+                EM_SETLIMITTEXT,
+                4, 0);
+
+            // Edit FPS Box
             CreateWindowEx(
                 NULL,
                 TEXT("Edit"),
-                TEXT("1920"),
+                fps,
                 WS_CHILD | WS_VISIBLE | ES_NUMBER | ES_CENTER | WS_TABSTOP,
-                10, 32, 60, 15,
+                159, 32, 60, 15,
                 hwnd,
-                (HMENU)IDC_WIDTH_EDIT,
+                (HMENU)IDC_FPS_EDIT,
                 hInstance,
                 NULL);
-        }
-        else {
+
+            SendMessage(
+                GetDlgItem(hwnd, IDC_FPS_EDIT),
+                WM_SETFONT,
+                (WPARAM)hFont,
+                TRUE);
+
+            SendMessage(
+                GetDlgItem(hwnd, IDC_FPS_EDIT),
+                EM_SETLIMITTEXT,
+                3, 0);
+
+            // Radio Button Group Label
             CreateWindowEx(
                 NULL,
-                TEXT("Edit"),
-                width,
-                WS_CHILD | WS_VISIBLE | ES_NUMBER | ES_CENTER | WS_TABSTOP,
-                10, 32, 60, 15,
+                TEXT("Button"),
+                TEXT("Window Mode"),
+                WS_VISIBLE | WS_CHILD | BS_GROUPBOX | BS_CENTER,
+                10, 60, 209, 85,
                 hwnd,
-                (HMENU)IDC_WIDTH_EDIT,
+                (HMENU)IDC_GROUP_RADIO,
                 hInstance,
                 NULL);
-        }
 
-        SendMessage(
-            GetDlgItem(hwnd, IDC_WIDTH_EDIT),
-            WM_SETFONT,
-            (WPARAM)hFont,
-            TRUE);
+            SendMessage(
+                GetDlgItem(hwnd, IDC_GROUP_RADIO),
+                WM_SETFONT,
+                (WPARAM)hFont,
+                TRUE);
 
-        SendMessage(
-            GetDlgItem(hwnd, IDC_WIDTH_EDIT),
-            EM_SETLIMITTEXT,
-            4, 0);
-
-        // Edit Height Box
-        if (height_length >= 5) {
+            // Fullscreen Radio
             CreateWindowEx(
                 NULL,
-                TEXT("Edit"),
-                TEXT("1920"),
-                WS_CHILD | WS_VISIBLE | ES_NUMBER | ES_CENTER | WS_TABSTOP,
-                85, 32, 60, 15,
+                TEXT("Button"),
+                TEXT("Fullscreen"),
+                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | WS_TABSTOP | WS_GROUP,
+                20, 80, 90, 15,
                 hwnd,
-                (HMENU)IDC_HEIGHT_EDIT,
+                (HMENU)IDC_FS_RADIO,
                 hInstance,
                 NULL);
-        }
-        else {
-            CreateWindowEx(
-                NULL,
-                TEXT("Edit"),
-                height,
-                WS_CHILD | WS_VISIBLE | ES_NUMBER | ES_CENTER | WS_TABSTOP,
-                85, 32, 60, 15,
-                hwnd,
-                (HMENU)IDC_HEIGHT_EDIT,
-                hInstance,
-                NULL);
-        }
 
-        SendMessage(
-            GetDlgItem(hwnd, IDC_HEIGHT_EDIT),
-            WM_SETFONT,
-            (WPARAM)hFont,
-            TRUE);
-
-        SendMessage(
-            GetDlgItem(hwnd, IDC_HEIGHT_EDIT),
-            EM_SETLIMITTEXT,
-            4, 0);
-
-        // Edit FPS Box
-        CreateWindowEx(
-            NULL,
-            TEXT("Edit"),
-            fps,
-            WS_CHILD | WS_VISIBLE | ES_NUMBER | ES_CENTER | WS_TABSTOP,
-            159, 32, 60, 15,
-            hwnd,
-            (HMENU)IDC_FPS_EDIT,
-            hInstance,
-            NULL);
-
-        SendMessage(
-            GetDlgItem(hwnd, IDC_FPS_EDIT),
-            WM_SETFONT,
-            (WPARAM)hFont,
-            TRUE);
-
-        SendMessage(
-            GetDlgItem(hwnd, IDC_FPS_EDIT),
-            EM_SETLIMITTEXT,
-            3, 0);
-
-        // Radio Button Group Label
-        CreateWindowEx(
-            NULL,
-            TEXT("Button"),
-            TEXT("Window Mode"),
-            WS_VISIBLE | WS_CHILD | BS_GROUPBOX | BS_CENTER,
-            10, 60, 209, 85,
-            hwnd,
-            (HMENU)IDC_GROUP_RADIO,
-            hInstance,
-            NULL);
-
-        SendMessage(
-            GetDlgItem(hwnd, IDC_GROUP_RADIO),
-            WM_SETFONT,
-            (WPARAM)hFont,
-            TRUE);
-
-        // Fullscreen Radio
-        CreateWindowEx(
-            NULL,
-            TEXT("Button"),
-            TEXT("Fullscreen"),
-            WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | WS_TABSTOP | WS_GROUP,
-            20, 80, 90, 15,
-            hwnd,
-            (HMENU)IDC_FS_RADIO,
-            hInstance,
-            NULL);
-
-        SendMessage(
-            GetDlgItem(hwnd, IDC_FS_RADIO),
-            WM_SETFONT,
-            (WPARAM)hFont,
-            TRUE);
-
-        if (mode_value == "0") {
             SendMessage(
                 GetDlgItem(hwnd, IDC_FS_RADIO),
-                BM_SETCHECK,
-                BST_CHECKED,
-                0);
-        }
+                WM_SETFONT,
+                (WPARAM)hFont,
+                TRUE);
 
-        // Windowed Fullscreen Radio
-        CreateWindowEx(
-            NULL,
-            TEXT("Button"),
-            TEXT("Windowed Fullscreen"),
-            WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | WS_TABSTOP,
-            20, 100, 140, 15,
-            hwnd,
-            (HMENU)IDC_WFS_RADIO,
-            hInstance,
-            NULL);
+            if (mode_value == "0") {
+                SendMessage(
+                    GetDlgItem(hwnd, IDC_FS_RADIO),
+                    BM_SETCHECK,
+                    BST_CHECKED,
+                    0);
+            }
 
-        SendMessage(
-            GetDlgItem(hwnd, IDC_WFS_RADIO),
-            WM_SETFONT,
-            (WPARAM)hFont,
-            TRUE);
+            // Windowed Fullscreen Radio
+            CreateWindowEx(
+                NULL,
+                TEXT("Button"),
+                TEXT("Windowed Fullscreen"),
+                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | WS_TABSTOP,
+                20, 100, 140, 15,
+                hwnd,
+                (HMENU)IDC_WFS_RADIO,
+                hInstance,
+                NULL);
 
-        if (mode_value == "1") {
             SendMessage(
                 GetDlgItem(hwnd, IDC_WFS_RADIO),
-                BM_SETCHECK,
-                BST_CHECKED,
+                WM_SETFONT,
+                (WPARAM)hFont,
+                TRUE);
+
+            if (mode_value == "1") {
+                SendMessage(
+                    GetDlgItem(hwnd, IDC_WFS_RADIO),
+                    BM_SETCHECK,
+                    BST_CHECKED,
+                    0);
+            }
+
+            // Windowed Radio
+            CreateWindowEx(
+                NULL,
+                TEXT("Button"),
+                TEXT("Windowed"),
+                WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | WS_TABSTOP,
+                20, 120, 100, 15,
+                hwnd,
+                (HMENU)IDC_W_RADIO,
+                hInstance,
                 0);
-        }
 
-        // Windowed Radio
-        CreateWindowEx(
-            NULL,
-            TEXT("Button"),
-            TEXT("Windowed"),
-            WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | WS_TABSTOP,
-            20, 120, 100, 15,
-            hwnd,
-            (HMENU)IDC_W_RADIO,
-            hInstance,
-            NULL);
-
-        SendMessage(
-            GetDlgItem(hwnd, IDC_W_RADIO),
-            WM_SETFONT,
-            (WPARAM)hFont,
-            TRUE);
-
-        if (mode_value == "2") {
             SendMessage(
                 GetDlgItem(hwnd, IDC_W_RADIO),
+                WM_SETFONT,
+                (WPARAM)hFont,
+                TRUE);
+
+            if (mode_value == "2") {
+                SendMessage(
+                    GetDlgItem(hwnd, IDC_W_RADIO),
+                    BM_SETCHECK,
+                    BST_CHECKED,
+                    0);
+            }
+
+            // Read-only Checkbox
+            CreateWindowEx(
+                NULL,
+                TEXT("Button"),
+                TEXT("Read-only"),
+                WS_VISIBLE | WS_CHILD | BS_AUTOCHECKBOX | WS_TABSTOP,
+                10, 160, 90, 15,
+                hwnd,
+                (HMENU)IDC_RO_CHECKBOX,
+                hInstance,
+                NULL);
+
+            SendMessage(
+                GetDlgItem(hwnd, IDC_RO_CHECKBOX),
+                WM_SETFONT,
+                (WPARAM)hFont,
+                TRUE);
+
+            SendMessage(
+                GetDlgItem(hwnd, IDC_RO_CHECKBOX),
                 BM_SETCHECK,
                 BST_CHECKED,
                 0);
-        }
 
-        // Read-only Checkbox
-        CreateWindowEx(
-            NULL,
-            TEXT("Button"),
-            TEXT("Read-only"),
-            WS_VISIBLE | WS_CHILD | BS_AUTOCHECKBOX,
-            10, 160, 90, 15,
-            hwnd,
-            (HMENU)IDC_RO_CHECKBOX,
-            hInstance,
-            NULL);
+            // Apply Button
+            CreateWindowEx(
+                NULL,
+                TEXT("Button"),
+                TEXT("Apply"),
+                WS_CHILD | WS_VISIBLE | BS_OWNERDRAW | WS_TABSTOP,
+                10, 185, 209, 25,
+                hwnd,
+                (HMENU)IDC_APPLY_BUTTON,
+                hInstance,
+                NULL);
 
-        SendMessage(
-            GetDlgItem(hwnd, IDC_RO_CHECKBOX),
-            WM_SETFONT,
-            (WPARAM)hFont,
-            TRUE);
+            SendMessage(
+                GetDlgItem(hwnd, IDC_APPLY_BUTTON),
+                WM_SETFONT,
+                (WPARAM)hFont,
+                TRUE);
 
-        SendMessage(
-            GetDlgItem(hwnd, IDC_RO_CHECKBOX),
-            BM_SETCHECK,
-            BST_CHECKED,
-            0);
+            break;
 
-        // Apply Button
-        CreateWindowEx(
-            NULL,
-            TEXT("Button"),
-            TEXT("Apply"),
-            WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
-            10, 185, 209, 25,
-            hwnd,
-            (HMENU)IDC_APPLY_BUTTON,
-            hInstance,
-            NULL);
-
-        SendMessage(
-            GetDlgItem(hwnd, IDC_APPLY_BUTTON),
-            WM_SETFONT,
-            (WPARAM)hFont,
-            TRUE);
-
-        break;
-
-    // Set background and text color for static controls
-    case WM_CTLCOLORSTATIC:
-    {
-        HDC hdcStatic = (HDC)wParam;
-        SetTextColor(hdcStatic, RGB(93, 107, 238));
-        SetBkColor(hdcStatic, RGB(43, 45, 92));
-        return (INT_PTR)hBrushStatic;
-    }
-
-    // Set background and text color for edit controls
-    case WM_CTLCOLOREDIT:
-    {
-        HDC hdcEdit = (HDC)wParam;
-        SetTextColor(hdcEdit, RGB(255, 255, 255));
-        SetBkColor(hdcEdit, RGB(35, 35, 79));
-        return (INT_PTR)hBrushEdit;
-    }
-
-    // Set background and text color for button controls
-    case WM_CTLCOLORBTN:
-    {
-        HDC hdcButton = (HDC)wParam;
-        SetTextColor(hdcButton, RGB(255, 255, 255));
-        SetBkColor(hdcButton, RGB(93, 107, 238));
-        return (INT_PTR)hBrushButton;
-    }
-
-    case WM_COMMAND:
-        // Apply the settings to the configuration file
-        if (LOWORD(wParam) == IDC_APPLY_BUTTON) {
-            std::string path = GetPath();
-            LPCSTR file = path.c_str();
-
-            // Get the state of each checkbox and radio button
-            BOOL ro_checked = IsDlgButtonChecked(hwnd, IDC_RO_CHECKBOX);
-            BOOL fs_checked = IsDlgButtonChecked(hwnd, IDC_FS_RADIO);
-            BOOL wfs_checked = IsDlgButtonChecked(hwnd, IDC_WFS_RADIO);
-            BOOL w_checked = IsDlgButtonChecked(hwnd, IDC_W_RADIO);
-
-            struct stat buffer;
-
-            DWORD attributes = GetFileAttributesA(file);
-
-            // Modify the read-only attribute to save the settings
-            if (attributes & FILE_ATTRIBUTE_READONLY) {
-                attributes &= ~FILE_ATTRIBUTE_READONLY;
-                SetFileAttributesA(file, attributes);
+            // Set background and text color for static controls
+        case WM_CTLCOLORSTATIC:
+            {
+                HDC hdcStatic = (HDC)wParam;
+                SetTextColor(hdcStatic, RGB(93, 107, 238));
+                SetBkColor(hdcStatic, RGB(43, 45, 92));
+                return (INT_PTR)hBrushStatic;
             }
 
-            if (stat(file, &buffer) == 0) {
-                BOOL success;
+        // Set background and text color for edit controls
+        case WM_CTLCOLOREDIT:
+            {
+                HDC hdcEdit = (HDC)wParam;
+                SetTextColor(hdcEdit, RGB(255, 255, 255));
+                SetBkColor(hdcEdit, RGB(35, 35, 79));
+                return (INT_PTR)hBrushEdit;
+            }
 
-                int width = GetDlgItemInt(
-                    hwnd,
-                    IDC_WIDTH_EDIT,
-                    &success,
-                    FALSE);
+        // Set background and text color for button controls
+        case WM_CTLCOLORBTN:
+            {
+                HDC hdcButton = (HDC)wParam;
+                SetTextColor(hdcButton, RGB(255, 255, 255));
+                SetBkColor(hdcButton, RGB(93, 107, 238));
+                return (INT_PTR)hBrushButton;
+            }
 
-                int height = GetDlgItemInt(
-                    hwnd,
-                    IDC_HEIGHT_EDIT,
-                    &success,
-                    FALSE);
+        case WM_COMMAND:
+            // Save and apply the settings to the configuration file
+            if (LOWORD(wParam) == IDC_APPLY_BUTTON) {
+                std::string path = GetPath();
+                LPCSTR file = path.c_str();
+                struct stat buffer;
 
-                int fps = GetDlgItemInt(
-                    hwnd,
-                    IDC_FPS_EDIT,
-                    &success,
-                    FALSE);
+                // Get the current file attributes
+                DWORD attributes = GetFileAttributesA(file);
 
-                if (success) {
-                    SetConfiguration(path, width, height, fps);
-
-                    MessageBoxA(
-                        hwnd,
-                        "Your settings were successfully saved.",
-                        "Success",
-                        MB_OK);
-                } else {
-                    MessageBoxA(
-                        hwnd,
-                        "Please enter a resolution.",
-                        "Warning",
-                        MB_OK | MB_ICONWARNING);
+                // Unset the read-only attribute, if it is set
+                if (attributes & FILE_ATTRIBUTE_READONLY) {
+                    attributes &= ~FILE_ATTRIBUTE_READONLY;
+                    SetFileAttributesA(file, attributes);
                 }
 
-                // Set the window mode options in the configuration file
-                if (fs_checked) {
-                    // 0 sets Window Mode to Fullscreen
-                    SetWindowMode(file, 0);
-                }
-                else if (wfs_checked) {
-                    // 1 sets Window Mode to Windowed Fullscreen
-                    SetWindowMode(file, 1);
+                if (stat(file, &buffer) == 0) {
+                    BOOL width_success;
+                    BOOL height_success;
+                    BOOL fps_success;
+
+                    int width = GetDlgItemInt(
+                        hwnd,
+                        IDC_WIDTH_EDIT,
+                        &width_success,
+                        FALSE);
+
+                    int height = GetDlgItemInt(
+                        hwnd,
+                        IDC_HEIGHT_EDIT,
+                        &height_success,
+                        FALSE);
+
+                    int fps = GetDlgItemInt(
+                        hwnd,
+                        IDC_FPS_EDIT,
+                        &fps_success,
+                        FALSE);
+
+                    if (width_success && height_success && fps_success) {
+                        // Get the state of the "Window Mode" radio buttons
+                        BOOL fs_checked = IsDlgButtonChecked(hwnd, IDC_FS_RADIO);
+                        BOOL wfs_checked = IsDlgButtonChecked(hwnd, IDC_WFS_RADIO);
+                        int mode = 0;
+
+                        // Set the "Window Mode" setting in the configuration file
+                        if (fs_checked) {
+                            // 0 is Fullscreen
+                            mode = 0;
+                        }
+                        else if (wfs_checked) {
+                            // 1 is Windowed Fullscreen
+                            mode = 1;
+                        }
+                        else {
+                            // 2 is Windowed
+                            mode = 2;
+                        }
+
+                        SetConfiguration(path, width, height, fps, mode);
+
+                        MessageBoxA(
+                            hwnd,
+                            "Your settings were successfully saved.",
+                            "Success",
+                            MB_OK);
+                    }
+                    else {
+                        MessageBoxA(
+                            hwnd,
+                            "Please fill out every field.",
+                            "Warning",
+                            MB_OK | MB_ICONWARNING);
+                    }
+
+                    // Get the state of the read-only checkbox
+                    BOOL ro_checked = IsDlgButtonChecked(hwnd, IDC_RO_CHECKBOX);
+
+                    // Set the configuration file to read-only
+                    if (ro_checked) {
+                        SetFileAttributesA(file, FILE_ATTRIBUTE_READONLY);
+                    }
                 }
                 else {
-                    // 2 sets Window Mode to Windowed
-                    SetWindowMode(file, 2);
+                    MessageBoxA(
+                        hwnd,
+                        "Configuration file could not be found.",
+                        "Error",
+                        MB_OK | MB_ICONERROR);
                 }
-
-                // Set the configuration file to read-only
-                if (ro_checked) {
-                    SetFileAttributesA(file, FILE_ATTRIBUTE_READONLY);
-                }
-            } else {
-                MessageBoxA(
-                    hwnd,
-                    "There was an error finding your configuration file.",
-                    "Error",
-                    MB_OK | MB_ICONERROR);
             }
-        }
-        break;
+            break;
 
-    case WM_DRAWITEM:
-        if (wParam == IDC_APPLY_BUTTON) {
-            LPDRAWITEMSTRUCT pdis = (LPDRAWITEMSTRUCT)lParam;
+        case WM_SETFOCUS:
+            SetFocus(GetDlgItem(hwnd, IDC_APPLY_BUTTON));
+            break;
 
-            DrawTextA(
-                pdis->hDC,
-                "Apply",
-                5,
-                &pdis->rcItem,
-                DT_CENTER | DT_SINGLELINE | DT_VCENTER);
+        case WM_DRAWITEM:
+            // Draw the text on the "Apply" button
+            if (wParam == IDC_APPLY_BUTTON) {
+                LPDRAWITEMSTRUCT pdis = (LPDRAWITEMSTRUCT)lParam;
 
-            return TRUE;
-        }
+                DrawTextA(
+                    pdis->hDC,
+                    "Apply",
+                    5,
+                    &pdis->rcItem,
+                    DT_CENTER | DT_SINGLELINE | DT_VCENTER);
 
-        break;
+                return TRUE;
+            }
 
-    case WM_DESTROY:
-        DeleteObject(hFont);
-        DeleteObject(hBrushStatic);
-        DeleteObject(hBrushEdit);
-        DeleteObject(hBrushButton);
-        PostQuitMessage(0);
-        return 0;
+            break;
 
-    case WM_PAINT:
-    {
-        PAINTSTRUCT ps;
-        HDC hdc = BeginPaint(hwnd, &ps);
-        EndPaint(hwnd, &ps);
-        break;
+        case WM_DESTROY:
+            DeleteObject(hFont);
+            DeleteObject(hBrushStatic);
+            DeleteObject(hBrushEdit);
+            DeleteObject(hBrushButton);
+            PostQuitMessage(0);
+            break;
+
+        default:
+            return DefWindowProc(hwnd, message, wParam, lParam);
     }
     return 0;
-    }
-    return DefWindowProc(hwnd, message, wParam, lParam);
 }
