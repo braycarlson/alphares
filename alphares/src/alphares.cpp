@@ -244,7 +244,15 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
                 (WPARAM)hFont,
                 TRUE);
 
-            // Edit Width Box
+            /*
+            Edit Width Box
+
+            By default, Fortnite doesn't use a standard resolution.
+            If the length of the width is greater than 4, then it
+            is an indicator a custom resolution has never been set.
+            So, display a default value of 1920, otherwise display
+            the custom width value from their configuration file.
+             */
             if (width_length >= 5) {
                 CreateWindowEx(
                     NULL,
@@ -281,12 +289,20 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
                 EM_SETLIMITTEXT,
                 4, 0);
 
-            // Edit Height Box
+            /*
+            Edit Height Box
+
+            By default, Fortnite doesn't use a standard resolution.
+            If the length of the height is greater than 4, then it
+            is an indicator a custom resolution has never been set.
+            So, display a default value of 1080, otherwise display
+            the custom height value from their configuration file.
+             */
             if (height_length >= 5) {
                 CreateWindowEx(
                     NULL,
                     TEXT("Edit"),
-                    TEXT("1920"),
+                    TEXT("1080"),
                     WS_CHILD | WS_VISIBLE | ES_NUMBER | ES_CENTER | WS_TABSTOP,
                     85, 32, 60, 15,
                     hwnd,
@@ -318,7 +334,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
                 EM_SETLIMITTEXT,
                 4, 0);
 
-            // Edit FPS Box
+            /*
+            Edit FPS Box
+
+            A value of 0 will set the Framerate Limit to Unlimited
+             */
             CreateWindowEx(
                 NULL,
                 TEXT("Edit"),
@@ -421,7 +441,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
                 hwnd,
                 (HMENU)IDC_W_RADIO,
                 hInstance,
-                0);
+                NULL);
 
             SendMessage(
                 GetDlgItem(hwnd, IDC_W_RADIO),
@@ -481,7 +501,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 
             break;
 
-            // Set background and text color for static controls
+        // Set background and text color for static controls
         case WM_CTLCOLORSTATIC:
             {
                 HDC hdcStatic = (HDC)wParam;
@@ -599,10 +619,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
                         MB_OK | MB_ICONERROR);
                 }
             }
-            break;
-
-        case WM_SETFOCUS:
-            SetFocus(GetDlgItem(hwnd, IDC_APPLY_BUTTON));
             break;
 
         case WM_DRAWITEM:

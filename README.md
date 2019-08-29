@@ -10,13 +10,11 @@ alphares is a Windows tool to save custom settings in Fortnite.
 * 1154x1080
 * 1080x1080
 
-## Framerate Limit
-You must set the FPS field to `0` in alphares, if you want to have a **Unlimited** framerate limit in Fortnite.
-
-## Notice
-* You may also need to set a custom resolution in your Nvidia or AMD Control Panel for alphares to work.
-* alphares can set the read-only attribute on the configuration file. It is on by default, however, you will not be allowed to save changes in your Fortnite Settings while it is on. If it is off, Fortnite **may** overwrite your custom settings when you update the game.
-* alphares will save your custom settings to `C:\Users\Username\AppData\Local\FortniteGame\Saved\Config\WindowsClient\GameUserSettings.ini`, and set the read-only attribute after saving the file.
+## Note
+* Please ensure you have launched **Fortnite** at least once, and allowed the game to automatically detect the best settings or have saved custom settings in-game before running alphares.
+* You need to set a custom resolution in your Nvidia or AMD Control Panel as well as in alphares to use a custom resolution in Fortnite.
+* alphares can set/unset the read-only attribute for the Fortnite configuration file. It is set by default, however, you will not be allowed to make changes to settings in-game while it is set. If it is unset, Fortnite **may** overwrite your custom settings when you update the game.
+* You must set the FPS field to `0` in alphares, if you want to have a **Unlimited** framerate in Fortnite.
 
 ## To-Do
 * Draw an outline on the `Apply` button when focused
