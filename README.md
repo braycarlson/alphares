@@ -1,7 +1,7 @@
 ## alphares
 alphares is a tool for Windows to save custom settings in Fortnite.
 
-I made this tool when it was possible to customize the resolution via a configuration file, however, Fortnite disallowed it sometime after the release of this project. I have noticed alphares appearing in YouTube and TikTok videos, so it still might be possible to change the resolution of Fortnite, but I am unable confirm it as I no longer play the game. If you want to download this tool, then please do so from GitHub as it is the safest option. Go to the "Download" section below for instructions.
+I made this tool when it was possible to customize the resolution via a configuration file, however, Fortnite disallowed it sometime after the release of this project. I have noticed alphares appearing in YouTube and TikTok videos, so it might be possible to change the resolution of Fortnite, but I am unable confirm it, as I no longer play the game. If you want to download this tool, then please do so from GitHub as it is the safest option and go to the "Download" section.
 
 ![alphares](https://raw.githubusercontent.com/braycarlson/alphares/master/alphares/gfx/alphares.png)
 
