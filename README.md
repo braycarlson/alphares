@@ -26,16 +26,15 @@ I made this tool when it was possible to customize Fortnite's resolution via a c
 * 1080x1080
 
 ## Support
-If you want to support what I do consider making a donation:
+If you want to support what I do, consider making a donation:
 * [PayPal](https://www.paypal.com/donate/?business=4RVQB7W25BNJA&no_recurring=0&currency_code=CAD)
 * [BuyMeACoffee](https://www.buymeacoffee.com/braycarlson)
 * [Ko-fi](https://ko-fi.com/braycarlson)
 
-
 ## Note
 * You must have launched Fortnite at least once, and allowed the game to detect the best settings or saved custom settings in-game before running alphares.
-* alphares can set/unset the read-only attribute for the Fortnite configuration file. It is set by default, however, you will not be allowed to make changes to settings in-game while it is set. If it is unset, Fortnite **might** overwrite your custom settings when you update the game.
-* You must set the FPS field to `0` in alphares, if you want to have a **Unlimited** framerate in Fortnite.
+* alphares can set/unset the configuration file's read-only attribute. This is to prevent Fortnite from updating the configuration file and resetting the custom resolution. As such, you will be unable to save settings in-game while it is set. You must uncheck the read-only box and press "Apply" to save changes.
+* If you want to have an uncapped framerate in Fortnite, you must set the FPS field to `0` in alphares.
 
 ## To-do
 * Draw an outline on the `Apply` button when focused
@@ -43,5 +42,4 @@ If you want to support what I do consider making a donation:
 * Redraw the radio buttons
 
 ## License
-
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
