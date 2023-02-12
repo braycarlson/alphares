@@ -16,7 +16,7 @@ I made this tool when it was possible to customize the resolution via a configur
 * Change the `Width` and `Height` to a desired resolution
 * Click on "Read-only" so the box is checked
 * Press "Apply"
-* You *might* also have to change settings in the Nvidia or AMD control panel
+* You *might* also have to change the settings in the NVIDIA or AMD Control Panel
 
 ## Popular resolution(s)
 * 1600x1080
@@ -27,7 +27,6 @@ I made this tool when it was possible to customize the resolution via a configur
 
 ## Note
 * You must have launched **Fortnite** at least once, and allowed the game to automatically detect the best settings or have saved custom settings in-game before running alphares.
-* You need to set a custom resolution in your Nvidia or AMD Control Panel as well as in alphares to use a custom resolution in Fortnite.
 * alphares can set/unset the read-only attribute for the Fortnite configuration file. It is set by default, however, you will not be allowed to make changes to settings in-game while it is set. If it is unset, Fortnite **might** overwrite your custom settings when you update the game.
 * You must set the FPS field to `0` in alphares, if you want to have a **Unlimited** framerate in Fortnite.
 
