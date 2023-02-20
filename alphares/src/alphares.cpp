@@ -130,6 +130,7 @@ void SetConfiguration(std::string path, int user_width, int user_height, int use
 
     // Set frame rate limit
     ini.SetValue(section, "FrameRateLimit", fps);
+    ini.SetValue(section, "FrontendFrameRateLimit", fps);
 
     // Set window mode
     ini.SetValue(section, "LastConfirmedFullscreenMode", mode);
