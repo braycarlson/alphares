@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Brayden Carlson
+ * Copyright (C) 2023 Brayden Carlson
  *
  * You may use, distribute and modify this
  * code under the terms of the MIT license.

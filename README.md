@@ -18,6 +18,16 @@ I made this tool when it was possible to customize Fortnite's resolution via a c
 * Press "Apply"
 * You *might* also have to change the settings in the NVIDIA or AMD Control Panel
 
+## Uninstall
+
+1. Close Fortnite.
+2. Press: <kbd>Win</kbd> + <kbd>R</kbd> to open a "Run" window.
+3. In the box, type: `%localappdata%` and press <kbd>Enter</kbd>.
+4. From there, you will have to navigate to: "FortniteGame/Saved/Config/WindowsClient/GameUserSettings.ini".
+5. Right-click on "GameUserSettings.ini", then select "Properties".
+6. A dialog box will open where you can uncheck the "Read-only" flag, and then press "Apply".
+7. Delete the `alphares` folder and executable.
+
 ## Popular resolution(s)
 * 1600x1080
 * 1440x1080

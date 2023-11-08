@@ -1,24 +1,29 @@
 /*
- * Copyright (C) 2019 Brayden Carlson
+ * Copyright (C) 2023 Brayden Carlson
  *
  * You may use, distribute and modify this
  * code under the terms of the MIT license.
  */
 
+#include <cstdlib>
 #include <stdio.h>
+#include <string>
 #include <sys/stat.h>
 #include <windows.h>
-#include <Uxtheme.h>
-#include <string>
+#include <uxtheme.h>
 
 #include "resources.h"
-#include "simpleini/SimpleIni.h"
+#include "simpleini.h"
+
+#define WINDOW_STYLE ((WS_OVERLAPPEDWINDOW & (~WS_MAXIMIZEBOX)) ^ WS_THICKFRAME)
+
 
 LRESULT CALLBACK WindowProc(
     HWND hwnd,
     UINT message,
     WPARAM wParam,
-    LPARAM lParam);
+    LPARAM lParam
+);
 
 void CenterWindow(HWND window, DWORD style, DWORD exStyle) {
     int screen_width = GetSystemMetrics(SM_CXSCREEN);
@@ -31,15 +36,19 @@ void CenterWindow(HWND window, DWORD style, DWORD exStyle) {
     int client_width = client_rect.right - client_rect.left;
     int client_height = client_rect.bottom - client_rect.top;
 
-    SetWindowPos(window, NULL,
+    SetWindowPos(window, 0,
         screen_width / 2 - client_width / 2,
         screen_height / 2 - client_height / 2,
-        client_width, client_height, 0);
+        client_width, client_height, 0
+    );
 }
 
-int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ PWSTR pCmdLine, _In_ int nCmdShow) {
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow) {
     const wchar_t CLASS_NAME[] = L"alphares";
     const wchar_t WINDOW_NAME[] = L"alphares";
+
+    (void)hPrevInstance;
+    (void)pCmdLine;
 
     WNDCLASS wc = { };
     MSG message = { };
@@ -58,23 +67,24 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         0,
         CLASS_NAME,
         WINDOW_NAME,
-        WS_OVERLAPPEDWINDOW&~WS_MAXIMIZEBOX^WS_THICKFRAME,
+        WINDOW_STYLE,
         CW_USEDEFAULT, CW_USEDEFAULT, 250, 260,
-        NULL,
-        NULL,
+        0,
+        0,
         hInstance,
-        NULL);
+        0
+    );
 
-    CenterWindow(hwnd, WS_OVERLAPPEDWINDOW&~WS_MAXIMIZEBOX^WS_THICKFRAME, 0);
+    CenterWindow(hwnd, WINDOW_STYLE, 0);
 
-    if (hwnd == NULL) {
+    if (hwnd == 0) {
         return 0;
     }
 
     ShowWindow(hwnd, nCmdShow);
     UpdateWindow(hwnd);
 
-    while (GetMessage(&message, NULL, 0, 0)) {
+    while (GetMessage(&message, 0, 0, 0)) {
         if (!IsDialogMessage(hwnd, &message)) {
             TranslateMessage(&message);
             DispatchMessage(&message);
@@ -84,17 +94,15 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 }
 
 std::string GetPath() {
-    char* localappdata;
-    size_t length;
-    errno_t error =_dupenv_s(&localappdata, &length, "LOCALAPPDATA");
+    const char* localappdata = std::getenv("LOCALAPPDATA");
+    std::string path;
 
-    if (localappdata != 0) {
+    if (localappdata != nullptr) {
         std::string file = "/FortniteGame/Saved/Config/WindowsClient/GameUserSettings.ini";
-        std::string path = localappdata + file;
-        free(localappdata);
-
-        return path;
+        path = localappdata + file;
     }
+
+    return path;
 }
 
 void SetConfiguration(std::string path, int user_width, int user_height, int user_fps, int user_mode) {
@@ -130,6 +138,7 @@ void SetConfiguration(std::string path, int user_width, int user_height, int use
 
     // Set frame rate limit
     ini.SetValue(section, "FrameRateLimit", fps);
+    ini.SetValue(section, "FrontendFrameRateLimit", fps);
 
     // Set window mode
     ini.SetValue(section, "LastConfirmedFullscreenMode", mode);
@@ -192,7 +201,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 
             // Width Label
             CreateWindowEx(
-                NULL,
+                0,
                 TEXT("Static"),
                 TEXT("Width"),
                 WS_CHILD | WS_VISIBLE | ES_CENTER,
@@ -200,17 +209,19 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
                 hwnd,
                 (HMENU)IDC_WIDTH_LABEL,
                 hInstance,
-                NULL);
+                0
+            );
 
             SendMessage(
                 GetDlgItem(hwnd, IDC_WIDTH_LABEL),
                 WM_SETFONT,
                 (WPARAM)hFont,
-                TRUE);
+                TRUE
+            );
 
             // Height Label
             CreateWindowEx(
-                NULL,
+                0,
                 TEXT("Static"),
                 TEXT("Height"),
                 WS_CHILD | WS_VISIBLE | ES_CENTER,
@@ -218,17 +229,19 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
                 hwnd,
                 (HMENU)IDC_HEIGHT_LABEL,
                 hInstance,
-                NULL);
+                0
+            );
 
             SendMessage(
                 GetDlgItem(hwnd, IDC_HEIGHT_LABEL),
                 WM_SETFONT,
                 (WPARAM)hFont,
-                TRUE);
+                TRUE
+            );
 
             // FPS Label
             CreateWindowEx(
-                NULL,
+                0,
                 TEXT("Static"),
                 TEXT("FPS"),
                 WS_CHILD | WS_VISIBLE | ES_CENTER,
@@ -236,13 +249,15 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
                 hwnd,
                 (HMENU)IDC_FPS_LABEL,
                 hInstance,
-                NULL);
+                0
+            );
 
             SendMessage(
                 GetDlgItem(hwnd, IDC_FPS_LABEL),
                 WM_SETFONT,
                 (WPARAM)hFont,
-                TRUE);
+                TRUE
+            );
 
             /*
             Edit Width Box
@@ -255,7 +270,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
              */
             if (width_length >= 5) {
                 CreateWindowEx(
-                    NULL,
+                    0,
                     TEXT("Edit"),
                     TEXT("1920"),
                     WS_CHILD | WS_VISIBLE | ES_NUMBER | ES_CENTER | WS_TABSTOP,
@@ -263,11 +278,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
                     hwnd,
                     (HMENU)IDC_WIDTH_EDIT,
                     hInstance,
-                    NULL);
+                    0
+                );
             }
             else {
                 CreateWindowEx(
-                    NULL,
+                    0,
                     TEXT("Edit"),
                     width,
                     WS_CHILD | WS_VISIBLE | ES_NUMBER | ES_CENTER | WS_TABSTOP,
@@ -275,19 +291,23 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
                     hwnd,
                     (HMENU)IDC_WIDTH_EDIT,
                     hInstance,
-                    NULL);
+                    0
+                );
             }
 
             SendMessage(
                 GetDlgItem(hwnd, IDC_WIDTH_EDIT),
                 WM_SETFONT,
                 (WPARAM)hFont,
-                TRUE);
+                TRUE
+            );
 
             SendMessage(
                 GetDlgItem(hwnd, IDC_WIDTH_EDIT),
                 EM_SETLIMITTEXT,
-                4, 0);
+                4,
+                0
+            );
 
             /*
             Edit Height Box
@@ -300,7 +320,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
              */
             if (height_length >= 5) {
                 CreateWindowEx(
-                    NULL,
+                    0,
                     TEXT("Edit"),
                     TEXT("1080"),
                     WS_CHILD | WS_VISIBLE | ES_NUMBER | ES_CENTER | WS_TABSTOP,
@@ -308,11 +328,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
                     hwnd,
                     (HMENU)IDC_HEIGHT_EDIT,
                     hInstance,
-                    NULL);
+                    0
+                );
             }
             else {
                 CreateWindowEx(
-                    NULL,
+                    0,
                     TEXT("Edit"),
                     height,
                     WS_CHILD | WS_VISIBLE | ES_NUMBER | ES_CENTER | WS_TABSTOP,
@@ -320,19 +341,23 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
                     hwnd,
                     (HMENU)IDC_HEIGHT_EDIT,
                     hInstance,
-                    NULL);
+                    0
+                );
             }
 
             SendMessage(
                 GetDlgItem(hwnd, IDC_HEIGHT_EDIT),
                 WM_SETFONT,
                 (WPARAM)hFont,
-                TRUE);
+                TRUE
+            );
 
             SendMessage(
                 GetDlgItem(hwnd, IDC_HEIGHT_EDIT),
                 EM_SETLIMITTEXT,
-                4, 0);
+                4,
+                0
+            );
 
             /*
             Edit FPS Box
@@ -340,7 +365,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
             A value of 0 will set the Framerate Limit to Unlimited
              */
             CreateWindowEx(
-                NULL,
+                0,
                 TEXT("Edit"),
                 fps,
                 WS_CHILD | WS_VISIBLE | ES_NUMBER | ES_CENTER | WS_TABSTOP,
@@ -348,22 +373,26 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
                 hwnd,
                 (HMENU)IDC_FPS_EDIT,
                 hInstance,
-                NULL);
+                0
+            );
 
             SendMessage(
                 GetDlgItem(hwnd, IDC_FPS_EDIT),
                 WM_SETFONT,
                 (WPARAM)hFont,
-                TRUE);
+                TRUE
+            );
 
             SendMessage(
                 GetDlgItem(hwnd, IDC_FPS_EDIT),
                 EM_SETLIMITTEXT,
-                3, 0);
+                3,
+                0
+            );
 
             // Radio Button Group Label
             CreateWindowEx(
-                NULL,
+                0,
                 TEXT("Button"),
                 TEXT("Window Mode"),
                 WS_VISIBLE | WS_CHILD | BS_GROUPBOX | BS_CENTER,
@@ -371,17 +400,19 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
                 hwnd,
                 (HMENU)IDC_GROUP_RADIO,
                 hInstance,
-                NULL);
+                0
+            );
 
             SendMessage(
                 GetDlgItem(hwnd, IDC_GROUP_RADIO),
                 WM_SETFONT,
                 (WPARAM)hFont,
-                TRUE);
+                TRUE
+            );
 
             // Fullscreen Radio
             CreateWindowEx(
-                NULL,
+                0,
                 TEXT("Button"),
                 TEXT("Fullscreen"),
                 WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | WS_TABSTOP | WS_GROUP,
@@ -389,25 +420,28 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
                 hwnd,
                 (HMENU)IDC_FS_RADIO,
                 hInstance,
-                NULL);
+                0
+            );
 
             SendMessage(
                 GetDlgItem(hwnd, IDC_FS_RADIO),
                 WM_SETFONT,
                 (WPARAM)hFont,
-                TRUE);
+                TRUE
+            );
 
             if (mode_value == "0") {
                 SendMessage(
                     GetDlgItem(hwnd, IDC_FS_RADIO),
                     BM_SETCHECK,
                     BST_CHECKED,
-                    0);
+                    0
+                );
             }
 
             // Windowed Fullscreen Radio
             CreateWindowEx(
-                NULL,
+                0,
                 TEXT("Button"),
                 TEXT("Windowed Fullscreen"),
                 WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | WS_TABSTOP,
@@ -415,25 +449,28 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
                 hwnd,
                 (HMENU)IDC_WFS_RADIO,
                 hInstance,
-                NULL);
+                0
+            );
 
             SendMessage(
                 GetDlgItem(hwnd, IDC_WFS_RADIO),
                 WM_SETFONT,
                 (WPARAM)hFont,
-                TRUE);
+                TRUE
+            );
 
             if (mode_value == "1") {
                 SendMessage(
                     GetDlgItem(hwnd, IDC_WFS_RADIO),
                     BM_SETCHECK,
                     BST_CHECKED,
-                    0);
+                    0
+                );
             }
 
             // Windowed Radio
             CreateWindowEx(
-                NULL,
+                0,
                 TEXT("Button"),
                 TEXT("Windowed"),
                 WS_VISIBLE | WS_CHILD | BS_AUTORADIOBUTTON | WS_TABSTOP,
@@ -441,25 +478,28 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
                 hwnd,
                 (HMENU)IDC_W_RADIO,
                 hInstance,
-                NULL);
+                0
+            );
 
             SendMessage(
                 GetDlgItem(hwnd, IDC_W_RADIO),
                 WM_SETFONT,
                 (WPARAM)hFont,
-                TRUE);
+                TRUE
+            );
 
             if (mode_value == "2") {
                 SendMessage(
                     GetDlgItem(hwnd, IDC_W_RADIO),
                     BM_SETCHECK,
                     BST_CHECKED,
-                    0);
+                    0
+                );
             }
 
             // Read-only Checkbox
             CreateWindowEx(
-                NULL,
+                0,
                 TEXT("Button"),
                 TEXT("Read-only"),
                 WS_VISIBLE | WS_CHILD | BS_AUTOCHECKBOX | WS_TABSTOP,
@@ -467,23 +507,26 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
                 hwnd,
                 (HMENU)IDC_RO_CHECKBOX,
                 hInstance,
-                NULL);
+                0
+            );
 
             SendMessage(
                 GetDlgItem(hwnd, IDC_RO_CHECKBOX),
                 WM_SETFONT,
                 (WPARAM)hFont,
-                TRUE);
+                TRUE
+            );
 
             SendMessage(
                 GetDlgItem(hwnd, IDC_RO_CHECKBOX),
                 BM_SETCHECK,
                 BST_CHECKED,
-                0);
+                0
+            );
 
             // Apply Button
             CreateWindowEx(
-                NULL,
+                0,
                 TEXT("Button"),
                 TEXT("Apply"),
                 WS_CHILD | WS_VISIBLE | BS_OWNERDRAW | WS_TABSTOP,
@@ -491,13 +534,15 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
                 hwnd,
                 (HMENU)IDC_APPLY_BUTTON,
                 hInstance,
-                NULL);
+                0
+            );
 
             SendMessage(
                 GetDlgItem(hwnd, IDC_APPLY_BUTTON),
                 WM_SETFONT,
                 (WPARAM)hFont,
-                TRUE);
+                TRUE
+            );
 
             break;
 
@@ -553,19 +598,22 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
                         hwnd,
                         IDC_WIDTH_EDIT,
                         &width_success,
-                        FALSE);
+                        FALSE
+                    );
 
                     int height = GetDlgItemInt(
                         hwnd,
                         IDC_HEIGHT_EDIT,
                         &height_success,
-                        FALSE);
+                        FALSE
+                    );
 
                     int fps = GetDlgItemInt(
                         hwnd,
                         IDC_FPS_EDIT,
                         &fps_success,
-                        FALSE);
+                        FALSE
+                    );
 
                     if (width_success && height_success && fps_success) {
                         // Get the state of the "Window Mode" radio buttons
@@ -593,14 +641,16 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
                             hwnd,
                             "Your settings were successfully saved.",
                             "Success",
-                            MB_OK);
+                            MB_OK
+                        );
                     }
                     else {
                         MessageBoxA(
                             hwnd,
                             "Please fill out every field.",
                             "Warning",
-                            MB_OK | MB_ICONWARNING);
+                            MB_OK | MB_ICONWARNING
+                        );
                     }
 
                     // Get the state of the read-only checkbox
@@ -616,7 +666,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
                         hwnd,
                         "Configuration file could not be found.",
                         "Error",
-                        MB_OK | MB_ICONERROR);
+                        MB_OK | MB_ICONERROR
+                    );
                 }
             }
             break;
@@ -631,7 +682,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
                     "Apply",
                     5,
                     &pdis->rcItem,
-                    DT_CENTER | DT_SINGLELINE | DT_VCENTER);
+                    DT_CENTER | DT_SINGLELINE | DT_VCENTER
+                );
 
                 return TRUE;
             }
