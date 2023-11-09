@@ -1,6 +1,6 @@
 // Microsoft Visual C++ generated resource script.
 //
-#include "src/resources.h"
+#include "include/resources.h"
 
 IDR_ICON ICON "asset/alphares.ico"
 

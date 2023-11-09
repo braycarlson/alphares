@@ -1,20 +1,12 @@
-/*
- * Copyright (C) 2023 Brayden Carlson
- *
- * You may use, distribute and modify this
- * code under the terms of the MIT license.
- */
-
-#ifndef RESOURCES_H
-#define RESOURCES_H
+#pragma once
 
 #ifdef APSTUDIO_INVOKED
-#ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        101
-#define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1001
-#define _APS_NEXT_SYMED_VALUE           101
-#endif
+    #ifndef APSTUDIO_READONLY_SYMBOLS
+        #define _APS_NEXT_RESOURCE_VALUE        101
+        #define _APS_NEXT_COMMAND_VALUE         40001
+        #define _APS_NEXT_CONTROL_VALUE         1001
+        #define _APS_NEXT_SYMED_VALUE           101
+    #endif
 #endif
 
 #define IDR_ICON           2000
@@ -34,5 +26,3 @@
 
 #define IDC_RO_CHECKBOX    2055
 #define IDC_APPLY_BUTTON   2060
-
-#endif
