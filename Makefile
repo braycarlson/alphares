@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall -Wextra -std=c++11 -DUNICODE -D_UNICODE -O2
+CXXFLAGS = -Wall -Wextra -std=c++20 -DUNICODE -D_UNICODE -O2
 
 ROOT = alphares
 LIB = $(ROOT)/lib
@@ -23,7 +23,7 @@ all: $(EXECUTABLE) $(RES_OBJ)
 
 # Linking
 $(EXECUTABLE): $(OBJECTS) $(RES_OBJ)
-	$(CXX) $(CXXFLAGS) $(OBJECTS) $(RES_OBJ) -o $(EXECUTABLE) $(LIBS) $(INCLUDES)
+	$(CXX) $(CXXFLAGS) $(OBJECTS) $(RES_OBJ) -o $(EXECUTABLE) $(LIBS) $(INCLUDES) -static -s
 
 # Compiling C++ source files
 $(SRC)/%.o: $(SRC)/%.cpp
