@@ -8,7 +8,6 @@ I made this tool when it was possible to customize Fortnite's resolution via a c
 ## Download
 * Go to [Releases](https://github.com/braycarlson/alphares/releases/tag/1.2.3)
 * Under **Assets**, click "alphares.exe"
-* Rename the executable to "alphares"
 * Move it to an accessible location (i.e., Documents, Desktop, etc.)
 
 ## How to use
