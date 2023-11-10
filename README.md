@@ -10,6 +10,13 @@ I made this tool when it was possible to customize Fortnite's resolution via a c
 * Under **Assets**, click "alphares.exe"
 * Move it to an accessible location (i.e., Documents, Desktop, etc.)
 
+## Suspicious File or Virus
+* You can view the scan of the latest release from VirusTotal [here](https://www.virustotal.com/gui/file/bde5ea88d838064b292ffe7652267aff27cec538b49e389ae2bcd75aca1c7c33/detection).
+* Chrome or Firefox might detect it as suspicious, because I have released a new version. However, as more people download it, then the warning should disappear. You should still be able to download the file.
+* Windows Defender will flag software from unknown sources, small developers or without a certificate, so there are often false positives. The solution to this is to purchase a certificate from a Certificate Authority, but this can be expensive for a small developer. Read more [here](https://stackoverflow.com/questions/252226/signing-a-windows-exe-file). As a workaround, I can "self-sign" the software, however, this will lead to Windows SmartScreen warning you about running the file.
+* Windows SmartScreen will state that: "Microsoft Defender SmartScreen prevented an unrecognized app from starting. Running this app might put your PC at risk". However, if you press "More Info", then you will be able to run the program by pressing "Run anyway". I hope as more people download it, then the program will become more trusted and Microsoft will no longer flag it.
+* **If you do not feel safe, then please do not download the file. Alternatively, if you have experience in software, then you can review the code or compile it yourself by running:** `make && alphares.exe`.
+
 ## How to use
 * Open the "alphares" executable
 * Change the `Width` and `Height` to a desired resolution
@@ -19,13 +26,28 @@ I made this tool when it was possible to customize Fortnite's resolution via a c
 
 ## Uninstall
 
+There is nothing to uninstall.
+
+If you want to delete alphares, then just delete or move `alphares.exe` to the Recycle Bin.
+
+If you want to "undo" the changes made from using alphares, then you must:
+
 1. Close Fortnite.
-2. Press: <kbd>Win</kbd> + <kbd>R</kbd> to open a "Run" window.
-3. In the box, type: `%localappdata%` and press <kbd>Enter</kbd>.
-4. From there, you will have to navigate to: "FortniteGame/Saved/Config/WindowsClient/GameUserSettings.ini".
-5. Right-click on "GameUserSettings.ini", then select "Properties".
-6. A dialog box will open where you can uncheck the "Read-only" flag, and then press "Apply".
-7. Delete the `alphares` folder and executable.
+2. Press `Win + R` to open a "Run" window.
+3. In the box, type: `%localappdata%` and press Enter.
+4. From there, you will have to navigate to: `FortniteGame/Saved/Config/WindowsClient/GameUserSettings.ini`.
+5. Right-click on `GameUserSettings.ini`, then select "Properties".
+6. A dialog box will open where you can uncheck the "Read-only" box, and then press "Apply".
+7. Open Fortnite.
+
+This should allow Fortnite to overwrite the settings that were saved from alphares. However, if that does not work, then you will have to delete the `GameUserSettings.ini` file. Please keep in mind that this will reset all settings.
+
+1. Close Fortnite.
+2. Press `Win + R` to open a "Run" window.
+3. In the box, type: `%localappdata%` and press Enter.
+4. From there, you will have to navigate to: `FortniteGame/Saved/Config/WindowsClient/GameUserSettings.ini`.
+5. Delete `GameUserSettings.ini`.
+6. Open Fortnite.
 
 ## Popular resolution(s)
 * 1600x1080
@@ -45,7 +67,8 @@ If you want to support what I do, consider making a donation:
 * alphares can set/unset the configuration file's read-only attribute. This is to prevent Fortnite from updating the configuration file and resetting the custom resolution. As such, you will be unable to save settings in-game while it is set. You must uncheck the read-only box and press "Apply" to save changes.
 * If you want to have an uncapped framerate in Fortnite, you must set the FPS field to `0` in alphares.
 
-## To-do
+## To-Do
+* Create a button to revert changes from alphares
 * Draw an outline on the `Apply` button when focused
 * Customize and change the color of the `BS_GROUPBOX` rectangle
 * Redraw the radio buttons
