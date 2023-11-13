@@ -1,3 +1,9 @@
+# alphares
+alphares/bin
+*.7z
+*.bat
+*.psd
+
 ## Prerequisites
 *.d
 
@@ -369,13 +375,3 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
-
-# alphares
-*.psd
-*.7z
-Debug/
-Release/
-x64/
-alphares/Debug
-alphares/Release
-alphares/x64

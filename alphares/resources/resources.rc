@@ -1,0 +1,5 @@
+#include "../include/resources.h"
+
+IDR_ICON ICON "../asset/alphares.ico"
+
+LANGUAGE 9, 1
