@@ -4,7 +4,7 @@ alphares is a tool for Windows to save custom settings in Fortnite.
 ![alphares](https://raw.githubusercontent.com/braycarlson/alphares/master/alphares/asset/alphares.png)
 
 ## Download
-* Go to [Releases](https://github.com/braycarlson/alphares/releases/tag/1.2.3)
+* Go to [Releases](https://github.com/braycarlson/alphares/releases/)
 * Under **Assets**, click "alphares.exe"
 * Move it to an accessible location (i.e., Documents, Desktop, etc.)
 
