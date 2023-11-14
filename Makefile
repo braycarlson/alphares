@@ -1,8 +1,8 @@
-# Architecture (32 or 64)
-ARCHITECTURE ?= 64
+# Architecture (x86 or x64)
+ARCHITECTURE ?= x86
 
 # Set architecture-specific flags and windres command
-ifeq ($(ARCHITECTURE),32)
+ifeq ($(ARCHITECTURE),x32)
 	MINGW32 = C:/msys64/mingw32/bin
 
     CXX = $(MINGW32)/g++
@@ -62,7 +62,7 @@ $(RES_OBJ): $(RC)
 
 # Full clean-up
 distclean:
-	rm -f $(SRC)/*.o $(BIN)/$(EXECUTABLE)_32.exe $(BIN)/$(EXECUTABLE)_64.exe $(RES_OBJ)
+	rm -f $(SRC)/*.o $(BIN)/$(EXECUTABLE)_x86.exe $(BIN)/$(EXECUTABLE)_x64.exe $(RES_OBJ)
 
 # Clean-up
 clean:

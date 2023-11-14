@@ -1,8 +1,6 @@
 ## alphares
 alphares is a tool for Windows to save custom settings in Fortnite.
 
-I made this tool when it was possible to customize Fortnite's resolution via a configuration file, however, Fortnite changed that sometime after the release of this project. As of late, I have noticed alphares appearing in YouTube and TikTok videos, so it might be possible to change the resolution of Fortnite again, but I am unable confirm it, as I no longer play the game. If you want to download this tool, then please do so from [here](https://github.com/braycarlson/alphares/releases/tag/1.2.3) as it is the safest option.
-
 ![alphares](https://raw.githubusercontent.com/braycarlson/alphares/master/alphares/asset/alphares.png)
 
 ## Download
@@ -11,11 +9,12 @@ I made this tool when it was possible to customize Fortnite's resolution via a c
 * Move it to an accessible location (i.e., Documents, Desktop, etc.)
 
 ## Suspicious File or Virus
-* You can view the scan of the latest release from VirusTotal [here](https://www.virustotal.com/gui/file/bde5ea88d838064b292ffe7652267aff27cec538b49e389ae2bcd75aca1c7c33/detection).
+* You can view the virus scan from VirusTotal for the [x86](https://www.virustotal.com/gui/file/ee181a4211982d54dcd77f2fdc3626642464fa6cba09c80c620c24dd86d73c31?nocache=1) or [x64](https://www.virustotal.com/gui/file/bde5ea88d838064b292ffe7652267aff27cec538b49e389ae2bcd75aca1c7c33/detection) release.
 * Chrome or Firefox might detect it as suspicious, because I have released a new version. However, as more people download it, then the warning should disappear. You should still be able to download the file.
-* Windows Defender will flag software from unknown sources, small developers or without a certificate, so there are often false positives. The solution to this is to purchase a certificate from a Certificate Authority, but this can be expensive for a small developer. Read more [here](https://stackoverflow.com/questions/252226/signing-a-windows-exe-file). As a workaround, I can "self-sign" the software, however, this will lead to Windows SmartScreen warning you about running the file.
+* Windows Defender will flag software without a certificate or from unknown sources, so there are often false positives. The solution to this is to purchase a certificate from a Certificate Authority, but this can be expensive for a small developer. Read more [here](https://stackoverflow.com/questions/252226/signing-a-windows-exe-file). As a workaround, I can "self-sign" the software, however, this will lead to Windows SmartScreen warning you about running the file.
 * Windows SmartScreen will state that: "Microsoft Defender SmartScreen prevented an unrecognized app from starting. Running this app might put your PC at risk". However, if you press "More Info", then you will be able to run the program by pressing "Run anyway". I hope as more people download it, then the program will become more trusted and Microsoft will no longer flag it.
-* **If you do not feel safe, then please do not download the file. Alternatively, if you have experience in software, then you can review the code or compile it yourself by running:** `make && alphares.exe`.
+* If you are using another anti-virus and alphares is detected as a virus, then you can add alphares as an exception. I do not have time to contact each anti-virus vendor, and ask them to allow it.
+* **If you do not feel safe, then please do not download the file. Alternatively, if you have experience in software, then you can review the code or compile it yourself by running:** `mingw32-make.exe ARCHITECTURE=x86 && alphares.exe` or `mingw64-make.exe ARCHITECTURE=x64 && alphares.exe`.
 
 ## How to use
 * Open the "alphares" executable
