@@ -67,7 +67,7 @@ The truth is I am not sure. Here are some fixes that have helped others:
 1. Close Fortnite, delete `GameUserSettings.ini`, re-open Fortnite to generate a new settings file, close Fortnite and then use alphares.
 2. Uninstall and reinstall Fortnite.
 
-### Why does alphares say there is no configuration file.
+### Why does alphares say there is no configuration file?
 * You must have launched Fortnite at least once, and allowed the game to detect the best settings or saved custom settings in-game before running alphares.
 
 ### What are popular resolution(s)?
