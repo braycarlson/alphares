@@ -29,7 +29,7 @@ Please **do not** open an issue before reading the FAQ, as I have answered the s
 * You *might* also have to change the settings in the NVIDIA or AMD Control Panel
 
 ### I can't do `xyz` in Fortnite after changing my resolution. Why?
-* It is possible that after changing Fortnite's resolution, you may experience issues such as:
+It is possible that after changing Fortnite's resolution, you may experience issues such as:
 
 1. The inability to open a menu, go to settings, click a button or access inventory
 2. Black vertical bar(s) in Fortnite
