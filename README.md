@@ -10,7 +10,7 @@ alphares is a tool for Windows to save custom settings in Fortnite.
 
 ## FAQ
 
-Please **do not** open an issue before reading the FAQ, as I have answered the same question(s) several times in multiple places. If you still have a question or concern after reading the FAQ, then feel free to open an issue.
+Please **do not** open an issue before reading the FAQ, as I have answered the same question(s) several times in multiple places. If you still have a question or concern after reading the FAQ, then feel free to open an issue. However, you must provide adequate information. What happened? What were you doing? What have you tried to fix the issue?
 
 ### Is alphares a virus or a suspicious file?
 * No, it is not a virus. All it does is change Fortnite's configuration file and set the file to read-only, so Fortnite cannot change the settings when an update is released - that is it.
