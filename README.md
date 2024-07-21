@@ -46,7 +46,7 @@ If you want to "undo" the changes made from using alphares, then you must:
 
 1. Close Fortnite.
 2. Press `Win + R` to open a "Run" window.
-3. In the box, type: `%localappdata%` and press Enter.
+3. In the "Run" box, type: `%localappdata%` and press Enter.
 4. From there, you will have to navigate to: `FortniteGame/Saved/Config/WindowsClient/GameUserSettings.ini`.
 5. Right-click on `GameUserSettings.ini`, then select "Properties".
 6. A dialog box will open where you can uncheck the "Read-only" box, and then press "Apply".
@@ -56,7 +56,7 @@ This should allow Fortnite to overwrite the settings that were saved from alphar
 
 1. Close Fortnite.
 2. Press `Win + R` to open a "Run" window.
-3. In the box, type: `%localappdata%` and press Enter.
+3. In the "Run" box, type: `%localappdata%` and press Enter.
 4. From there, you will have to navigate to: `FortniteGame/Saved/Config/WindowsClient/GameUserSettings.ini`.
 5. Delete `GameUserSettings.ini`.
 6. Open Fortnite.
@@ -65,10 +65,16 @@ This should allow Fortnite to overwrite the settings that were saved from alphar
 The truth is I am not sure. Here are some fixes that have helped others:
 
 1. Close Fortnite, delete `GameUserSettings.ini`, re-open Fortnite to generate a new settings file, close Fortnite and then use alphares.
-2. Uninstall and reinstall Fortnite.
+2. Run alphares as an administrator.
+3. Uninstall and reinstall Fortnite.
 
 ### Why does alphares say there is no configuration file?
-* You must have launched Fortnite at least once, and allowed the game to detect the best settings or saved custom settings in-game before running alphares.
+1. Press `Win + R` to open a "Run" window.
+2. In the "Run" box, type: `%localappdata%` and press Enter.
+3. From there, you will have to navigate to: `FortniteGame/Saved/Config/WindowsClient/GameUserSettings.ini`.
+4. If the `GameUserSettings.ini` file does exist, then close Fortnite and attempt to delete the file. However, please note that this will reset the game's settings.
+* Note: You should have launched Fortnite at least once, and allowed the game to detect the best settings or saved custom settings in-game before running alphares.
+* If you are still having issues, please open an issue and tell me where Fortnite is installed and if the `GameUserSettings.ini` is missing or not.
 
 ### What are popular resolution(s)?
 * 1600x1080
