@@ -17,21 +17,23 @@ else
 endif
 
 CXXFLAGS = -Wall -Wextra -std=c++20 -DUNICODE -D_UNICODE -O2 $(ARCHITECTURE_FLAGS)
-LDFLAGS = $(ARCHITECTURE_FLAGS)
+LDFLAGS = -lgdi32 -luser32 -mwindows -municode -static -s $(ARCHITECTURE_FLAGS)
 
 ROOT = alphares
 BIN = $(ROOT)/bin
+OBJ = $(ROOT)/obj
 LIB = $(ROOT)/lib
 SRC = $(ROOT)/src
 INCLUDE = $(ROOT)/include
 LIBRARY = $(LIB)/simpleini
 RESOURCES = $(ROOT)/resources
 RC = $(RESOURCES)/resources.rc
-RES_OBJ = $(RESOURCES)/resources.o
+MANIFEST = $(RESOURCES)/alphares.exe.manifest
+RES_OBJ = $(OBJ)/resources.o
 
 # Source and object files
 SOURCES = $(wildcard $(SRC)/*.cpp)
-OBJECTS = $(SOURCES:.cpp=.o)
+OBJECTS = $(patsubst $(SRC)/%.cpp,$(OBJ)/%.o,$(SOURCES))
 EXECUTABLE = alphares
 
 # Library
@@ -41,30 +43,29 @@ INCLUDES = -I$(INCLUDE) -I$(LIBRARY)
 .PHONY: all clean
 
 # Main build target
-all: | $(BIN)
+all: | $(BIN) $(OBJ)
 	$(MAKE) $(EXECUTABLE)
 
-# Creating the "bin" directory
-$(BIN):
-	mkdir -p $(BIN)
+# Creating the "bin" and "obj" directories
+$(BIN) $(OBJ):
+	@if not exist "$@" mkdir "$@"
 
 # Linking
-$(EXECUTABLE): $(OBJECTS) $(RES_OBJ)
+$(EXECUTABLE): $(OBJECTS) $(RES_OBJ) $(MANIFEST)
 	$(CXX) $(CXXFLAGS) $(OBJECTS) $(RES_OBJ) -o $(BIN)/$(EXECUTABLE)_$(ARCHITECTURE) $(LIBS) $(INCLUDES) $(LDFLAGS) -static -s
 
 # Compiling C++ source files
-$(SRC)/%.o: $(SRC)/%.cpp
+$(OBJ)/%.o: $(SRC)/%.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
-# Compiling resources
-$(RES_OBJ): $(RC)
-	$(WINDRES) $< -O coff -o $@
+# Compiling resources and embedding the manifest
+$(RES_OBJ): $(RC) $(MANIFEST)
+	$(WINDRES) --input $< --output $@ --output-format=coff
 
 # Full clean-up
 distclean:
-	rm -f $(SRC)/*.o $(BIN)/$(EXECUTABLE)_x86.exe $(BIN)/$(EXECUTABLE)_x64.exe $(RES_OBJ)
+	rm -f $(OBJ)/*.o $(BIN)/$(EXECUTABLE)_x86.exe $(BIN)/$(EXECUTABLE)_x64.exe $(RES_OBJ)
 
 # Clean-up
 clean:
-	rm -f $(SRC)/*.o $(RES_OBJ)
-
+	rm -f $(OBJ)/*.o $(RES_OBJ)

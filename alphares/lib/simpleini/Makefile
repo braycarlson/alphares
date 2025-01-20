@@ -1,28 +1,18 @@
-CC=g++
-CFLAGS=-Wall
-CPPFLAGS=-Wall
+# This makefile is just to build the automatic test harness
+# To use SimpleIni, just include SimpleIni.h header file 
 
-OBJS=testsi.o test1.o snippets.o ConvertUTF.o
+PREFIX?=	/usr/local
 
-help:
-	@echo This makefile is just for the test program \(use \"make clean all test\"\)
-	@echo Just include the SimpleIni.h header file to use it.
-	
-all: $(OBJS)
-	$(CC) -o testsi $(OBJS)
+TOPTARGETS := all clean test
 
-clean:
-	rm -f core *.o testsi
+SUBDIRS := tests
 
-data:
-	sed 's/\r\n$$/\n/g' < test1-expected.ini > unix.out
-	mv unix.out test1-expected.ini
+$(TOPTARGETS): $(SUBDIRS)
+$(SUBDIRS):
+	$(MAKE) -C $@ $(MAKECMDGOALS)
 
-test: testsi
-	./testsi -u -m -l test1-input.ini > test1-blah.ini
-	diff test1-output.ini test1-expected.ini
+.PHONY: $(TOPTARGETS) $(SUBDIRS)
 
 install:
-	@echo No install required. Just include the SimpleIni.h header file to use it.
-
-testsi.o test1.o snippets.o : SimpleIni.h
+	mkdir -p $(DESTDIR)$(PREFIX)/include/
+	install -C -m 644 SimpleIni.h $(DESTDIR)$(PREFIX)/include/

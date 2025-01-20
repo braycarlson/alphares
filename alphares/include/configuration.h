@@ -1,28 +1,43 @@
 #include <cstdlib>
+#include <filesystem>
+#include <fstream>
 #include <string>
 
-#include "simpleini.h"
+#include "../lib/simpleini/simpleini.h"
 
 #pragma once
+
+typedef enum {
+    MODE_FULLSCREEN = 0,
+    MODE_WINDOWED_FULLSCREEN = 1,
+    MODE_WINDOWED = 2
+} WindowMode;
 
 class Configuration {
 public:
     Configuration();
 
-    std::string getPath();
-    std::string getWindowMode();
+    bool createBackup();
+    bool isBackup();
+    void reloadConfiguration();
+    bool revertToBackup();
+
+    std::wstring getPath();
+    std::wstring getWindowMode();
     std::wstring getWidth();
     std::wstring getHeight();
     std::wstring getFrameRate();
-    void setConfiguration(int width, int height, int fps, int mode);
+    void setConfiguration(int, int, int, int);
+    bool setReadOnlyAttribute(const std::wstring&);
+    bool setWritableAttribute(const std::wstring&);
 
 private:
-    void setWidth(int width);
-    void setHeight(int height);
-    void setFrameRate(int fps);
-    void setWindowMode(int mode);
+    void setWidth(int);
+    void setHeight(int);
+    void setFrameRate(int);
+    void setWindowMode(int);
 
-    CSimpleIniA ini;
-    const char* section = "/Script/FortniteGame.FortGameUserSettings";
-    std::string path;
+    CSimpleIniW ini;
+    const wchar_t* section = L"/Script/FortniteGame.FortGameUserSettings";
+    std::wstring path;
 };

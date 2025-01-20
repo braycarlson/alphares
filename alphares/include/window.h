@@ -1,24 +1,34 @@
 #pragma once
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#ifdef _WIN32
+    #include <io.h>
+    #define access _access
+#else
+    #include <unistd.h>
+#endif
 
-#include <configuration.h>
-#include <ui.h>
+#include <string>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <windows.h>
+#include <winuser.h>
+
+#include "../include/configuration.h"
+#include "../include/ui.h"
+#include "../include/window.h"
 
 #define WINDOW_STYLE ((WS_OVERLAPPEDWINDOW & (~WS_MAXIMIZEBOX)) ^ WS_THICKFRAME)
+#define WM_USER_UPDATE_UI (WM_USER + 1)
 
 class Window {
 public:
-    Window(HINSTANCE hInstance);
+    Window(HINSTANCE);
     ~Window();
 
-    bool create(const wchar_t* title, int width, int height);
-    void center(DWORD style, DWORD exStyle);
-    void show(int cmdShow);
-    static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    bool create(const wchar_t*, int, int);
+    void center(DWORD, DWORD);
+    void show(int);
+    static LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
 
 private:
     HWND hWnd = nullptr;
@@ -27,18 +37,21 @@ private:
     HBRUSH hBrushBackground = nullptr;
     HBRUSH hBrushStatic = nullptr;
     HBRUSH hBrushEdit = nullptr;
-    HBRUSH hBrushButton = nullptr;
+    HBRUSH hBrushApplyButton = nullptr;
+    HBRUSH hBrushRevertButton = nullptr;
 
     Configuration* configuration = nullptr;
     UserInterface* ui = nullptr;
 
-    static Window* getObject(HWND hwnd);
-    void registerClass(const wchar_t* name);
-    LRESULT onColorButton(WPARAM wParam);
-    LRESULT onColorEdit(WPARAM wParam);
-    LRESULT onColorStatic(WPARAM wParam);
-    LRESULT onDraw(WPARAM wParam, LPARAM lParam);
-    void onCommand(WPARAM wParam, LPARAM lParam);
+    static Window* getObject(HWND);
+    void registerClass(const wchar_t*);
+    void applySettings();
+    void revertSettings();
+    LRESULT onColorButton(WPARAM, LPARAM);
+    LRESULT onColorEdit(WPARAM);
+    LRESULT onColorStatic(WPARAM);
+    LRESULT onDraw(WPARAM, LPARAM);
+    void onCommand(WPARAM, LPARAM);
     void onCreate();
     void onDestroy();
 };
