@@ -1,11 +1,11 @@
+#pragma once
+
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <string>
 
 #include "../lib/simpleini/simpleini.h"
-
-#pragma once
 
 typedef enum {
     MODE_FULLSCREEN = 0,
@@ -29,7 +29,7 @@ public:
     std::wstring getFrameRate();
     void setConfiguration(int, int, int, int);
     bool setReadOnlyAttribute(const std::wstring&);
-    bool setWritableAttribute(const std::wstring&);
+    bool unsetReadOnlyAttribute(const std::wstring&);
 
 private:
     void setWidth(int);

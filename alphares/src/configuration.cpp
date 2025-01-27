@@ -58,14 +58,16 @@ bool Configuration::isBackup() {
 }
 
 bool Configuration::revertToBackup() {
-    if (!this->isBackup()) {
+    bool success = this->isBackup();
+
+    if (!success) {
         return false;
     }
 
     std::wstring original = this->getPath();
     std::wstring backup = original + L"_backup";
 
-    bool is_writeable = this->setWritableAttribute(original);
+    bool is_writeable = this->unsetReadOnlyAttribute(original);
 
     if (!is_writeable) {
         return false;
@@ -75,7 +77,7 @@ bool Configuration::revertToBackup() {
         std::filesystem::remove(original);
         std::filesystem::rename(backup, original);
 
-        this->setWritableAttribute(original);
+        this->unsetReadOnlyAttribute(original);
     } catch (const std::exception& e) {
         return false;
     }
@@ -101,7 +103,7 @@ bool Configuration::setReadOnlyAttribute(const std::wstring& path) {
     return true;
 }
 
-bool Configuration::setWritableAttribute(const std::wstring& path) {
+bool Configuration::unsetReadOnlyAttribute(const std::wstring& path) {
     LPCWSTR file = path.c_str();
 
     DWORD attributes = GetFileAttributesW(file);

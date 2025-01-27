@@ -1,5 +1,3 @@
-#include "../include/color.h"
-#include "../include/resources.h"
 #include "../include/window.h"
 
 Window::Window(HINSTANCE hInstance) : hWnd(nullptr), hInstance(hInstance) {
@@ -14,7 +12,9 @@ void Window::applySettings() {
     std::wstring path = this->configuration->getPath();
     LPCWSTR file = path.c_str();
 
-    if (!this->configuration->setWritableAttribute(path)) {
+    bool is_writeable = this->configuration->unsetReadOnlyAttribute(path);
+
+    if (!is_writeable) {
         MessageBoxW(
             hWnd,
             L"Unable to make the configuration file writable.",
@@ -25,7 +25,9 @@ void Window::applySettings() {
         return;
     }
 
-    if (!this->configuration->createBackup()) {
+    bool success = this->configuration->createBackup();
+
+    if (!success) {
         MessageBoxW(
             hWnd,
             L"Unable to create a backup of the configuration file.",
@@ -63,7 +65,6 @@ void Window::applySettings() {
             );
 
             this->configuration->reloadConfiguration();
-
             PostMessageW(this->hWnd, WM_USER_UPDATE_UI, 0, (LPARAM)this);
         } else {
             MessageBoxW(
@@ -88,13 +89,16 @@ void Window::applySettings() {
 }
 
 void Window::revertSettings() {
-    if (!this->configuration->revertToBackup()) {
+    bool success = this->configuration->revertToBackup();
+
+    if (!success) {
         MessageBoxW(
             hWnd,
             L"Unable to revert settings.",
             L"Error",
             MB_OK | MB_ICONERROR
         );
+
         return;
     }
 
@@ -106,7 +110,6 @@ void Window::revertSettings() {
     );
 
     this->configuration->reloadConfiguration();
-
     PostMessageW(this->hWnd, WM_USER_UPDATE_UI, 0, (LPARAM)this);
 }
 
@@ -200,27 +203,26 @@ LRESULT CALLBACK Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 
             case WM_USER_UPDATE_UI:
                 if (lParam) {
-                    Window* window = reinterpret_cast<Window*>(lParam);
                     window->ui->fromConfiguration(window->configuration);
                 }
 
                 return 0;
 
             case WM_CTLCOLORSTATIC:
-                return window->onColorStatic(wParam);
+                return window->ui->onColorStatic(wParam);
 
             case WM_CTLCOLOREDIT:
-                return window->onColorEdit(wParam);
+                return window->ui->onColorEdit(wParam);
 
             case WM_CTLCOLORBTN:
-                return window->onColorButton(wParam, lParam);
+                return window->ui->onColorButton(wParam, lParam);
 
             case WM_DESTROY:
                 window->onDestroy();
                 return 0;
 
             case WM_DRAWITEM:
-                return window->onDraw(wParam, lParam);
+                return window->ui->onDraw(wParam, lParam);
 
             default:
                 return DefWindowProcW(hWnd, uMsg, wParam, lParam);
@@ -230,50 +232,20 @@ LRESULT CALLBACK Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
     return DefWindowProcW(hWnd, uMsg, wParam, lParam);
 }
 
-LRESULT Window::onColorButton(WPARAM wParam, LPARAM lParam) {
-    HDC hdcButton = (HDC)wParam;
-    HWND hButton = (HWND)lParam;
-
-    if (GetDlgCtrlID(hButton) == IDC_APPLY_BUTTON) {
-        SetTextColor(hdcButton, Color::WHITE);
-        SetBkColor(hdcButton, Color::LIGHT_PURPLE);
-        return (LRESULT)this->hBrushApplyButton;
-    }
-
-    if (GetDlgCtrlID(hButton) == IDC_REVERT_BUTTON) {
-        SetTextColor(hdcButton, Color::WHITE);
-        SetBkColor(hdcButton, Color::GRAY);
-        return (LRESULT)this->hBrushRevertButton;
-    }
-
-    return (LRESULT)this->hBrushApplyButton;
-}
-
-
-LRESULT Window::onColorEdit(WPARAM wParam) {
-    HDC hdcEdit = (HDC)wParam;
-    SetTextColor(hdcEdit, Color::WHITE);
-    SetBkColor(hdcEdit, Color::DARK_PURPLE);
-    return (LRESULT)this->hBrushEdit;
-}
-
-LRESULT Window::onColorStatic(WPARAM wParam) {
-    HDC hdcStatic = (HDC)wParam;
-    SetTextColor(hdcStatic, Color::LIGHT_PURPLE);
-    SetBkColor(hdcStatic, Color::PURPLE);
-    return (LRESULT)this->hBrushStatic;
-}
-
 void Window::onCommand(WPARAM wParam, LPARAM lParam) {
-    (void)wParam;
     (void)lParam;
 
-    if (LOWORD(wParam) == IDC_APPLY_BUTTON) {
-        this->applySettings();
-    }
+    switch (LOWORD(wParam)) {
+        case IDC_APPLY_BUTTON:
+            this->applySettings();
+            break;
 
-    if (LOWORD(wParam) == IDC_REVERT_BUTTON) {
-        this->revertSettings();
+        case IDC_REVERT_BUTTON:
+            this->revertSettings();
+            break;
+
+        default:
+            break;
     }
 }
 
@@ -284,59 +256,15 @@ void Window::onCreate() {
 
     this->hFont = CreateFontIndirectW(&ncm.lfMessageFont);
 
-    this->hBrushStatic = CreateSolidBrush(Color::PURPLE);
-    this->hBrushEdit = CreateSolidBrush(Color::DARK_PURPLE);
-    this->hBrushApplyButton = CreateSolidBrush(Color::LIGHT_PURPLE);
-    this->hBrushRevertButton = CreateSolidBrush(Color::GRAY);
-
     this->ui = new UserInterface(this->hWnd, this->hInstance);
     this->ui->setFont(this->hFont);
     this->ui->initialize();
-
     this->ui->fromConfiguration(this->configuration);
-}
-
-LRESULT Window::onDraw(WPARAM wParam, LPARAM lParam) {
-    if (wParam == IDC_APPLY_BUTTON) {
-        LPDRAWITEMSTRUCT pdis = (LPDRAWITEMSTRUCT)lParam;
-
-        DrawTextW(
-            pdis->hDC,
-            L"Apply",
-            5,
-            &pdis->rcItem,
-            DT_CENTER | DT_SINGLELINE | DT_VCENTER
-        );
-
-        return TRUE;
-    }
-
-    if (wParam == IDC_REVERT_BUTTON) {
-        LPDRAWITEMSTRUCT pdis = (LPDRAWITEMSTRUCT)lParam;
-
-        DrawTextW(
-            pdis->hDC,
-            L"Revert",
-            6,
-            &pdis->rcItem,
-            DT_CENTER | DT_SINGLELINE | DT_VCENTER
-        );
-
-        return TRUE;
-    }
-
-    return FALSE;
 }
 
 void Window::onDestroy() {
     DeleteObject(this->hFont);
-    DeleteObject(this->hBrushStatic);
-    DeleteObject(this->hBrushEdit);
-    DeleteObject(this->hBrushApplyButton);
-    DeleteObject(this->hBrushRevertButton);
     DeleteObject(this->hBrushBackground);
-
     delete this->ui;
-
     PostQuitMessage(0);
 }

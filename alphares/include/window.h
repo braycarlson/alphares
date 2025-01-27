@@ -13,7 +13,9 @@
 #include <windows.h>
 #include <winuser.h>
 
+#include "../include/color.h"
 #include "../include/configuration.h"
+#include "../include/resources.h"
 #include "../include/ui.h"
 #include "../include/window.h"
 
@@ -35,10 +37,6 @@ private:
     HINSTANCE hInstance = nullptr;
     HFONT hFont = nullptr;
     HBRUSH hBrushBackground = nullptr;
-    HBRUSH hBrushStatic = nullptr;
-    HBRUSH hBrushEdit = nullptr;
-    HBRUSH hBrushApplyButton = nullptr;
-    HBRUSH hBrushRevertButton = nullptr;
 
     Configuration* configuration = nullptr;
     UserInterface* ui = nullptr;
@@ -47,10 +45,6 @@ private:
     void registerClass(const wchar_t*);
     void applySettings();
     void revertSettings();
-    LRESULT onColorButton(WPARAM, LPARAM);
-    LRESULT onColorEdit(WPARAM);
-    LRESULT onColorStatic(WPARAM);
-    LRESULT onDraw(WPARAM, LPARAM);
     void onCommand(WPARAM, LPARAM);
     void onCreate();
     void onDestroy();

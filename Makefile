@@ -1,19 +1,21 @@
 # Architecture (x86 or x64)
-ARCHITECTURE ?= x86
+ARCHITECTURE ?= x64
 
 # Set architecture-specific flags and windres command
-ifeq ($(ARCHITECTURE),x32)
-	MINGW32 = C:/msys64/mingw32/bin
+ifeq ($(ARCHITECTURE),x86)
+    MINGW32 = C:/msys64/mingw32/bin
 
     CXX = $(MINGW32)/g++
     ARCHITECTURE_FLAGS = -m32
     WINDRES = $(MINGW32)/windres --target=pe-i386
-else
-	MINGW64 = C:/msys64/mingw64/bin
+else ifeq ($(ARCHITECTURE),x64)
+    MINGW64 = C:/msys64/mingw64/bin
 
     CXX = $(MINGW64)/g++
     ARCHITECTURE_FLAGS = -m64
     WINDRES = $(MINGW64)/windres --target=x86_64-w64-mingw32
+else
+    $(error Invalid architecture specified. Use ARCHITECTURE=x86 or ARCHITECTURE=x64.)
 endif
 
 CXXFLAGS = -Wall -Wextra -std=c++20 -DUNICODE -D_UNICODE -O2 $(ARCHITECTURE_FLAGS)
@@ -40,7 +42,7 @@ EXECUTABLE = alphares
 LIBS = -lgdi32 -luser32 -mwindows
 INCLUDES = -I$(INCLUDE) -I$(LIBRARY)
 
-.PHONY: all clean
+.PHONY: all clean distclean
 
 # Main build target
 all: | $(BIN) $(OBJ)
@@ -52,7 +54,7 @@ $(BIN) $(OBJ):
 
 # Linking
 $(EXECUTABLE): $(OBJECTS) $(RES_OBJ) $(MANIFEST)
-	$(CXX) $(CXXFLAGS) $(OBJECTS) $(RES_OBJ) -o $(BIN)/$(EXECUTABLE)_$(ARCHITECTURE) $(LIBS) $(INCLUDES) $(LDFLAGS) -static -s
+	$(CXX) $(CXXFLAGS) $(OBJECTS) $(RES_OBJ) -o $(BIN)/$(EXECUTABLE)_$(ARCHITECTURE).exe $(LIBS) $(INCLUDES) $(LDFLAGS) -static -s
 
 # Compiling C++ source files
 $(OBJ)/%.o: $(SRC)/%.cpp
@@ -64,8 +66,12 @@ $(RES_OBJ): $(RC) $(MANIFEST)
 
 # Full clean-up
 distclean:
-	rm -f $(OBJ)/*.o $(BIN)/$(EXECUTABLE)_x86.exe $(BIN)/$(EXECUTABLE)_x64.exe $(RES_OBJ)
+	@if exist $(OBJ) for %%f in ("$(OBJ)\*.o") do del /q "%%f"
+	@if exist "$(BIN)\$(EXECUTABLE)_x86.exe" del /q "$(BIN)\$(EXECUTABLE)_x86.exe"
+	@if exist "$(BIN)\$(EXECUTABLE)_x64.exe" del /q "$(BIN)\$(EXECUTABLE)_x64.exe"
+	@if exist "$(RES_OBJ)" del /q "$(RES_OBJ)"
 
 # Clean-up
 clean:
-	rm -f $(OBJ)/*.o $(RES_OBJ)
+	@if exist $(OBJ) for %%f in ("$(OBJ)\*.o") do del /q "%%f"
+	@if exist "$(RES_OBJ)" del /q "$(RES_OBJ)"

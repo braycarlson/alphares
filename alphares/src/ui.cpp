@@ -5,7 +5,26 @@ UserInterface::UserInterface(HWND hWnd, HINSTANCE hInstance) {
     this->hInstance = hInstance;
 }
 
+UserInterface::~UserInterface() {
+    DeleteObject(this->hBrushStatic);
+    DeleteObject(this->hBrushEdit);
+    DeleteObject(this->hBrushApplyButton);
+    DeleteObject(this->hBrushRevertButton);
+}
+
 void UserInterface::initialize() {
+    this->createBrush();
+    this->createControl();
+}
+
+void UserInterface::createBrush() {
+    this->hBrushStatic = CreateSolidBrush(Color::PURPLE);
+    this->hBrushEdit = CreateSolidBrush(Color::DARK_PURPLE);
+    this->hBrushApplyButton = CreateSolidBrush(Color::LIGHT_PURPLE);
+    this->hBrushRevertButton = CreateSolidBrush(Color::GRAY);
+}
+
+void UserInterface::createControl() {
     this->createApplyButton();
     this->createRevertButton();
     this->createCheckbox();
@@ -309,7 +328,7 @@ void UserInterface::fromConfiguration(Configuration* configuration) {
     std::wstring width = configuration->getWidth();
     std::wstring height = configuration->getHeight();
     std::wstring fps = configuration->getFrameRate();
-    std::wstring windowMode = configuration->getWindowMode();
+    std::wstring window_mode = configuration->getWindowMode();
 
     SetWindowTextW(this->width_edit, width.c_str());
     SetWindowTextW(this->height_edit, height.c_str());
@@ -319,9 +338,9 @@ void UserInterface::fromConfiguration(Configuration* configuration) {
     SendMessageW(this->windowed_fullscreen_radio, BM_SETCHECK, BST_UNCHECKED, 0);
     SendMessageW(this->windowed_radio, BM_SETCHECK, BST_UNCHECKED, 0);
 
-    if (windowMode == L"0") {
+    if (window_mode == L"0") {
         SendMessageW(this->fullscreen_radio, BM_SETCHECK, BST_CHECKED, 0);
-    } else if (windowMode == L"1") {
+    } else if (window_mode == L"1") {
         SendMessageW(this->windowed_fullscreen_radio, BM_SETCHECK, BST_CHECKED, 0);
     } else {
         SendMessageW(this->windowed_radio, BM_SETCHECK, BST_CHECKED, 0);
@@ -338,6 +357,71 @@ void UserInterface::fromConfiguration(Configuration* configuration) {
         SendMessageW(this->readonly_checkbox, BM_SETCHECK, BST_CHECKED, 0);
     } else {
         SendMessageW(this->readonly_checkbox, BM_SETCHECK, BST_UNCHECKED, 0);
+    }
+}
+
+LRESULT UserInterface::onColorButton(WPARAM wParam, LPARAM lParam) {
+    HDC hdcButton = (HDC)wParam;
+    HWND hButton = (HWND)lParam;
+
+    switch (GetDlgCtrlID(hButton)) {
+        case IDC_APPLY_BUTTON:
+            SetTextColor(hdcButton, Color::WHITE);
+            SetBkColor(hdcButton, Color::LIGHT_PURPLE);
+            return (LRESULT)this->hBrushApplyButton;
+
+        case IDC_REVERT_BUTTON:
+            SetTextColor(hdcButton, Color::WHITE);
+            SetBkColor(hdcButton, Color::GRAY);
+            return (LRESULT)this->hBrushRevertButton;
+
+        default:
+            return (LRESULT)this->hBrushStatic;
+    }
+}
+
+LRESULT UserInterface::onColorEdit(WPARAM wParam) {
+    HDC hdcEdit = (HDC)wParam;
+    SetTextColor(hdcEdit, Color::WHITE);
+    SetBkColor(hdcEdit, Color::DARK_PURPLE);
+    return (LRESULT)this->hBrushEdit;
+}
+
+LRESULT UserInterface::onColorStatic(WPARAM wParam) {
+    HDC hdcStatic = (HDC)wParam;
+    SetTextColor(hdcStatic, Color::LIGHT_PURPLE);
+    SetBkColor(hdcStatic, Color::PURPLE);
+    return (LRESULT)this->hBrushStatic;
+}
+
+LRESULT UserInterface::onDraw(WPARAM wParam, LPARAM lParam) {
+    LPDRAWITEMSTRUCT pdis = reinterpret_cast<LPDRAWITEMSTRUCT>(lParam);
+
+    switch (wParam) {
+        case IDC_APPLY_BUTTON:
+            DrawTextW(
+                pdis->hDC,
+                L"Apply",
+                5,
+                &pdis->rcItem,
+                DT_CENTER | DT_SINGLELINE | DT_VCENTER
+            );
+
+            return TRUE;
+
+        case IDC_REVERT_BUTTON:
+            DrawTextW(
+                pdis->hDC,
+                L"Revert",
+                6,
+                &pdis->rcItem,
+                DT_CENTER | DT_SINGLELINE | DT_VCENTER
+            );
+
+            return TRUE;
+
+        default:
+            return FALSE;
     }
 }
 
