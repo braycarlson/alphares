@@ -8,7 +8,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR pCmdLin
 
     Window window(hInstance);
 
-    if (!window.create(L"alphares", 240, 250)) {
+    bool success = window.create(L"alphares", 240, 250);
+
+    if (!success) {
         return 0;
     }
 
