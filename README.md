@@ -42,15 +42,23 @@ There is nothing to uninstall.
 
 If you want to delete alphares, then just delete or move `alphares.exe` to the Recycle Bin.
 
-If you want to "undo" the changes made from using alphares, then you must:
+If you want to "undo" the changes made from using alphares, then there are two options:
 
-1. Close Fortnite.
-2. Press `Win + R` to open a "Run" window.
-3. In the "Run" box, type: `%localappdata%` and press Enter.
-4. From there, you will have to navigate to: `FortniteGame/Saved/Config/WindowsClient/GameUserSettings.ini`.
-5. Right-click on `GameUserSettings.ini`, then select "Properties".
-6. A dialog box will open where you can uncheck the "Read-only" box, and then press "Apply".
-7. Open Fortnite.
+1. **Automatically**
+    * Close Fortnite
+    * Run `alphares.exe`
+    * Press the "Revert" button to undo changes, which will restore the settings file to how it was before using alphares.
+        - This is a new feature in alphares v1.1. In order to use this feature, you would have needed to use alphares v1.1 on the settings file before this. If the file was in a good state before using alphares, then it should automatically restore the previous file.
+    * Open Fortnite
+
+2. **Manually**
+    * Close Fortnite.
+    * Press `Win + R` to open a "Run" window.
+    * In the "Run" box, type: `%localappdata%` and press Enter.
+    * From there, you will have to navigate to: `FortniteGame/Saved/Config/WindowsClient/GameUserSettings.ini`.
+    * Right-click on `GameUserSettings.ini`, then select "Properties".
+    * A dialog box will open where you can uncheck the "Read-only" box, and then press "Apply".
+    * Open Fortnite.
 
 This should allow Fortnite to overwrite the settings that were saved from alphares. However, if that does not work, then you will have to delete the `GameUserSettings.ini` file. Please keep in mind that this will reset all settings.
 
@@ -65,7 +73,7 @@ This should allow Fortnite to overwrite the settings that were saved from alphar
 The truth is I am not sure. Here are some fixes that have helped others:
 
 1. Close Fortnite, delete `GameUserSettings.ini`, re-open Fortnite to generate a new settings file, close Fortnite and then use alphares.
-2. Run alphares as an administrator.
+2. Run `alphares.exe` as an administrator.
 3. Uninstall and reinstall Fortnite.
 
 ### Why does alphares say there is no configuration file?
